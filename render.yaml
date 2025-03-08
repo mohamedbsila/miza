@@ -3,8 +3,11 @@ services:
     name: miza
     env: php
     runtime: php
-    buildCommand: composer install --no-dev --optimize-autoloader
-    startCommand: heroku-php-apache2 public/
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      php bin/console cache:clear --env=prod
+      php bin/console cache:warmup --env=prod
+    startCommand: vendor/bin/heroku-php-apache2 public/
     plan: free
     region: frankfurt
     buildFilter:
@@ -19,6 +22,8 @@ services:
     envVars:
       - key: APP_ENV
         value: prod
+      - key: APP_DEBUG
+        value: "0"
       - key: PHP_VERSION
         value: "8.1"
       - key: COMPOSER_VERSION
