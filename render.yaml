@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: miza
+    env: php
+    buildCommand: composer install --no-dev --optimize-autoloader
+    startCommand: heroku-php-apache2 public/
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: PHP_VERSION
+        value: 8.1
+    healthCheckPath: /
+    autoDeploy: false
+    disk:
+      name: uploads
+      mountPath: public/uploads
+      sizeGB: 1 
