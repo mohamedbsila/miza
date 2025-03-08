@@ -2,19 +2,10 @@ services:
   - type: web
     name: miza
     runtime: php
-    buildCommand: bash build.sh
+    buildCommand: composer install --no-dev --optimize-autoloader
     startCommand: vendor/bin/heroku-php-apache2 public/
     plan: free
     region: frankfurt
-    buildFilter:
-      paths:
-        - composer.json
-        - composer.lock
-        - src/**/*.php
-        - config/**/*
-        - public/**/*
-        - templates/**/*
-    buildpack: heroku/php
     envVars:
       - key: APP_ENV
         value: prod
