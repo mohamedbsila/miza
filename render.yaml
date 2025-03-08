@@ -1,6 +1,7 @@
 services:
   - type: web
     name: miza
+    env: php
     runtime: php
     plan: free
     region: frankfurt
