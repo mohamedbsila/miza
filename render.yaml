@@ -3,10 +3,19 @@ services:
     name: miza
     env: php
     runtime: php
-    plan: free
-    region: frankfurt
     buildCommand: composer install --no-dev --optimize-autoloader
     startCommand: heroku-php-apache2 public/
+    plan: free
+    region: frankfurt
+    buildFilter:
+      paths:
+        - composer.json
+        - composer.lock
+        - src/**/*.php
+        - config/**/*
+        - public/**/*
+        - templates/**/*
+    buildpack: heroku/php
     envVars:
       - key: APP_ENV
         value: prod
