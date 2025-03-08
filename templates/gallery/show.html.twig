@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ gallery.title }}{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .gallery-page {
+        min-height: 100vh;
+    }
+    
+    .gallery-header {
+        height: 400px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+    
+    .gallery-header .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .gallery-header h1 {
+        color: white;
+        font-size: 3rem;
+        text-align: center;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .gallery-content {
+        padding: 4rem 0;
+    }
+    
+    .gallery-description {
+        max-width: 800px;
+        margin: 0 auto 3rem;
+        text-align: center;
+        font-size: 1.2rem;
+        line-height: 1.6;
+        color: #666;
+    }
+    
+    .gallery-items {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+    }
+
+    body.dark-mode .gallery-description {
+        color: #999;
+    }
+
+    body.dark-mode .gallery-items {
+        color: #666;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="gallery-page">
+    <div class="gallery-header" style="background-image: url('{{ gallery.image }}')">
+        <div class="overlay">
+            <h1>{{ gallery.title }}</h1>
+        </div>
+    </div>
+    
+    <div class="gallery-content">
+        <div class="container">
+            <p class="gallery-description">
+                Discover our curated collection of {{ type }} lighting solutions. From elegant chandeliers to modern sconces,
+                find the perfect lighting to illuminate your {{ type }} space.
+            </p>
+            
+            {# Gallery items will be added here in future updates #}
+            <div class="gallery-items">
+                <p class="text-center">Gallery items coming soon...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

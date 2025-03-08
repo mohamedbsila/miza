@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Category{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Create New Category</h1>
+
+        {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form_row(form.name, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.slug, {'attr': {'class': 'form-control'}}) }}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    {{ form_row(form.description, {'attr': {'class': 'form-control'}}) }}
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Create Category</button>
+                <a href="{{ path('admin_category_index') }}" class="btn btn-secondary">Back to List</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+
+    {# Auto-generate slug from name #}
+    <script>
+        document.querySelector('#category_name').addEventListener('input', function(e) {
+            let slug = e.target.value
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+            document.querySelector('#category_slug').value = slug;
+        });
+    </script>
+{% endblock %} 

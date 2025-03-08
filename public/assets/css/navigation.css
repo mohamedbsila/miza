@@ -1,0 +1,233 @@
+/* Navigation Styles */
+.main-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: var(--component-bg);
+    z-index: 1000;
+    padding: 1rem 2rem;
+    transition: all 0.3s ease;
+}
+
+.nav-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-logo img {
+    height: 40px;
+    width: auto;
+    transition: opacity 0.3s ease;
+}
+
+/* Navigation Links */
+.contact-link {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+    color: #2B2F0E;
+}
+
+/* Buttons and Icons */
+.menu-toggle,
+.theme-toggle,
+.light-switch-toggle,
+.search-toggle,
+.cart-toggle,
+.account-toggle {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.menu-toggle:hover,
+.theme-toggle:hover,
+.light-switch-toggle:hover,
+.search-toggle:hover,
+.cart-toggle:hover,
+.account-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* SVG Icons */
+.menu-toggle svg,
+.theme-toggle svg,
+.search-toggle svg,
+.cart-toggle svg,
+.account-toggle svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--text-color);
+}
+
+.search-toggle svg {
+    stroke: var(--text-color);
+    fill: none;
+}
+
+/* Theme Toggle */
+.theme-toggle .sun-icon,
+.theme-toggle .moon-icon {
+    position: absolute;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+body:not(.dark-mode) .moon-icon,
+body.dark-mode .sun-icon {
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+/* Light Switch */
+.light-switch-toggle img {
+    width: 24px;
+    height: 24px;
+    transition: opacity 0.3s ease;
+}
+
+.light-switch-toggle .switch-off {
+    display: none;
+}
+
+body.dark-mode .light-switch-toggle .switch-on {
+    display: none;
+}
+
+body.dark-mode .light-switch-toggle .switch-off {
+    display: block;
+}
+
+/* Cart Styles */
+.cart-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.cart-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-toggle svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: var(--text-color);
+    stroke-width: 2;
+    transition: all 0.3s ease;
+}
+
+.cart-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--primary-color, #2B2F0E);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    min-width: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    transform-origin: center;
+    animation: cartBadgePop 0.3s ease-out;
+}
+
+.cart-toggle:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+.cart-toggle:hover svg {
+    transform: scale(1.1);
+}
+
+body.dark-mode .cart-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .cart-count {
+    background: var(--accent-color, #fff);
+    color: var(--primary-color, #1a1a1a);
+}
+
+@keyframes cartBadgePop {
+    0% {
+        transform: scale(0);
+    }
+    70% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Dark Mode Adjustments */
+body.dark-mode .contact-link:hover {
+    color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-nav {
+        padding: 1rem;
+    }
+
+    .nav-logo img {
+        height: 30px;
+    }
+
+    .nav-left, .nav-right {
+        gap: 1rem;
+    }
+
+    .cart-label {
+        display: none;
+    }
+    
+    .cart-toggle {
+        padding: 0.5rem;
+    }
+} 

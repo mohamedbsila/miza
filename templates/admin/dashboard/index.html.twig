@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .action-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+        }
+        .action-card:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        .action-card i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #007bff;
+        }
+        .recent-items {
+            margin-top: 2rem;
+        }
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .list-group-item small {
+            color: #6c757d;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Admin Dashboard</h1>
+
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h3>Total Products</h3>
+                <div class="value">{{ products_count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Categories</h3>
+                <div class="value">{{ categories_count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Featured Products</h3>
+                <div class="value">{{ featured_count }}</div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <a href="{{ path('admin_product_new') }}" class="action-card">
+                <i class="fas fa-plus"></i>
+                <h3>Add New Product</h3>
+            </a>
+            <a href="{{ path('admin_product_index') }}" class="action-card">
+                <i class="fas fa-box"></i>
+                <h3>Manage Products</h3>
+            </a>
+            <a href="{{ path('admin_category_index') }}" class="action-card">
+                <i class="fas fa-folder"></i>
+                <h3>Manage Categories</h3>
+            </a>
+        </div>
+
+        <div class="row recent-items">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Products</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for product in recent_products %}
+                            <div class="list-group-item">
+                                <div>
+                                    {{ product.name }}
+                                    <small class="d-block">SKU: {{ product.sku }}</small>
+                                </div>
+                                <div>${{ product.price }}</div>
+                            </div>
+                        {% else %}
+                            <div class="list-group-item">No recent products</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Categories</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for category in recent_categories %}
+                            <div class="list-group-item">
+                                {{ category.name }}
+                                {% if category.description %}
+                                    <small class="d-block">{{ category.description|slice(0, 50) }}...</small>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="list-group-item">No recent categories</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+{% endblock %} 

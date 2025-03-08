@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Orders - MIZA{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div class="profile-avatar mb-3">
+                        <i class="fas fa-user-circle fa-5x"></i>
+                    </div>
+                    <h3 class="mb-0">{{ app.user.fullName ?? app.user.email }}</h3>
+                    <p class="text-muted">Member since {{ app.user.createdAt|date('M Y') }}</p>
+                </div>
+            </div>
+
+            <div class="list-group shadow-sm">
+                <a href="{{ path('app_profile') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-user-cog me-2"></i> Profile Settings
+                </a>
+                <a href="{{ path('app_orders') }}" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-shopping-bag me-2"></i> My Orders
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="fas fa-heart me-2"></i> Wishlist
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="fas fa-map-marker-alt me-2"></i> Addresses
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="mb-4">Order History</h4>
+                    
+                    {% if orders is empty %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-shopping-bag fa-3x mb-3 text-muted"></i>
+                            <h5>No orders yet</h5>
+                            <p class="text-muted">When you place an order, it will appear here.</p>
+                            <a href="{{ path('app_products') }}" class="btn btn-primary">Start Shopping</a>
+                        </div>
+                    {% else %}
+                        {% for order in orders %}
+                            <div class="order-item mb-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-3">
+                                                <p class="text-muted mb-0">Order #{{ order.id }}</p>
+                                                <small class="text-muted">{{ order.createdAt|date('M d, Y') }}</small>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <p class="mb-0">{{ order.items|length }} item(s)</p>
+                                                <small class="text-muted">Total: ${{ order.total|number_format(2) }}</small>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <span class="badge bg-{{ order.status == 'completed' ? 'success' : 'warning' }}">
+                                                    {{ order.status|capitalize }}
+                                                </span>
+                                            </div>
+                                            <div class="col-md-2 text-end">
+                                                <a href="{{ path('app_order_detail', {'id': order.id}) }}" 
+                                                   class="btn btn-outline-primary btn-sm">
+                                                    View Details
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        background-color: var(--component-bg);
+    }
+    
+    .list-group-item {
+        background-color: var(--component-bg);
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
+    
+    .list-group-item:hover {
+        background-color: var(--hover-color);
+    }
+    
+    .list-group-item.active {
+        background-color: #2B2F0E;
+        border-color: #2B2F0E;
+    }
+    
+    .profile-avatar {
+        color: var(--text-color-secondary);
+    }
+    
+    .order-item .card {
+        transition: transform 0.2s ease;
+    }
+    
+    .order-item .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-outline-primary {
+        color: #2B2F0E;
+        border-color: #2B2F0E;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #2B2F0E;
+        border-color: #2B2F0E;
+        color: #fff;
+    }
+    
+    /* Dark mode adjustments */
+    [data-theme="dark"] .list-group-item.active {
+        background-color: #fff;
+        border-color: #fff;
+        color: #1a1a1a;
+    }
+    
+    [data-theme="dark"] .btn-outline-primary {
+        color: #fff;
+        border-color: #fff;
+    }
+    
+    [data-theme="dark"] .btn-outline-primary:hover {
+        background-color: #fff;
+        border-color: #fff;
+        color: #1a1a1a;
+    }
+    
+    [data-theme="dark"] .text-muted {
+        color: #999 !important;
+    }
+</style>
+{% endblock %} 

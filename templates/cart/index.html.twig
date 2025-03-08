@@ -1,0 +1,979 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Shopping Cart{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .cart-container {
+        max-width: 1200px;
+        margin: 4rem auto;
+        padding: 0 2rem;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .cart-header {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        padding: 1rem 2rem;
+        background: transparent;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        color: #666;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 1rem;
+    }
+
+    .cart-items {
+        background: transparent;
+        margin-bottom: 2rem;
+    }
+
+    .cart-item {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        padding: 2rem;
+        border-bottom: 1px solid #eee;
+        align-items: center;
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .product-col {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        position: relative;
+    }
+
+    .cart-item img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .product-name {
+        font-size: 0.95rem;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .quantity-control {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        width: fit-content;
+        background: white;
+    }
+
+    .quantity-btn {
+        border: none;
+        background: none;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        font-size: 1rem;
+        color: #666;
+        transition: all 0.2s ease;
+    }
+
+    .quantity-btn:hover {
+        color: #000;
+        background: #f5f5f5;
+    }
+
+    .quantity {
+        padding: 0.5rem;
+        min-width: 40px;
+        text-align: center;
+        border-left: 1px solid #e0e0e0;
+        border-right: 1px solid #e0e0e0;
+        font-size: 0.95rem;
+    }
+
+    .remove-item {
+        position: absolute;
+        left: -1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        font-size: 1.2rem;
+        transition: color 0.2s ease;
+    }
+
+    .remove-item:hover {
+        color: #333;
+    }
+
+    .price-col, .total-col {
+        font-size: 0.95rem;
+        color: #333;
+    }
+
+    .cart-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 2rem 0;
+        gap: 2rem;
+    }
+
+    .promo-code {
+        display: flex;
+        gap: 1rem;
+        flex: 1;
+        max-width: 600px;
+    }
+
+    .promo-input {
+        padding: 0.875rem 1rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        flex: 1;
+        font-size: 0.9rem;
+        transition: border-color 0.2s ease;
+    }
+
+    .promo-input:focus {
+        outline: none;
+        border-color: #000;
+    }
+
+    .promo-btn, .update-cart-btn {
+        padding: 0.875rem 1.5rem;
+        background: #1a1a1a;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+    .promo-btn:hover, .update-cart-btn:hover {
+        background: #333;
+        transform: translateY(-1px);
+    }
+
+    .cart-summary {
+        background: #f8f9fa;
+        padding: 2rem;
+        margin-top: 2rem;
+        border-radius: 8px;
+    }
+
+    .summary-title {
+        text-transform: uppercase;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #333;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 0.95rem;
+    }
+
+    .shipping-info {
+        text-align: right;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .shipping-info div:first-child {
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .modify-address {
+        color: #666;
+        text-decoration: underline;
+        font-size: 0.85rem;
+        transition: color 0.2s ease;
+        display: inline-block;
+        margin-top: 0.5rem;
+    }
+
+    .modify-address:hover {
+        color: #000;
+    }
+
+    .total {
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding-top: 1.5rem;
+        margin-top: 0.5rem;
+        border-top: 2px solid #e0e0e0;
+    }
+
+    .total span {
+        color: #333;
+    }
+
+    .checkout-btn {
+        width: 100%;
+        padding: 1.25rem;
+        background: #b5a79c;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        margin-top: 2rem;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-weight: 500;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
+    }
+
+    .checkout-btn:hover {
+        background: #a39589;
+        transform: translateY(-1px);
+    }
+
+    .empty-cart {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .empty-cart h2 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .empty-cart p {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .continue-shopping {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: #b5a79c;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .continue-shopping:hover {
+        background: #a39589;
+        transform: translateY(-1px);
+    }
+
+    /* Dark mode styles */
+    body.dark-mode .cart-header {
+        border-bottom-color: #333;
+        color: #999;
+    }
+
+    body.dark-mode .cart-item {
+        border-bottom-color: #333;
+    }
+
+    body.dark-mode .product-name,
+    body.dark-mode .price-col,
+    body.dark-mode .total-col {
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .quantity-control {
+        background: #2a2a2a;
+        border-color: #444;
+    }
+
+    body.dark-mode .quantity {
+        border-color: #444;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .quantity-btn:hover {
+        background: #333;
+        color: #fff;
+    }
+
+    body.dark-mode .promo-input {
+        background: #2a2a2a;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .promo-btn,
+    body.dark-mode .update-cart-btn {
+        background: #e0e0e0;
+        color: #1a1a1a;
+    }
+
+    body.dark-mode .cart-summary {
+        background: #2a2a2a;
+    }
+
+    body.dark-mode .summary-title,
+    body.dark-mode .total span {
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .summary-row {
+        border-bottom-color: #444;
+    }
+
+    body.dark-mode .shipping-info {
+        color: #999;
+    }
+
+    body.dark-mode .shipping-info div:first-child {
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .total {
+        border-top-color: #444;
+    }
+
+    body.dark-mode .modify-address:hover {
+        color: #fff;
+    }
+
+    @media (max-width: 768px) {
+        .cart-container {
+            padding: 0 1rem;
+            margin: 2rem auto;
+        }
+
+        .cart-header {
+            padding: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .cart-item {
+            padding: 1rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .product-col {
+            gap: 1rem;
+        }
+
+        .cart-item img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .cart-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .promo-code {
+            width: 100%;
+        }
+
+        .cart-summary {
+            padding: 1.5rem;
+        }
+    }
+
+    /* Payment Methods Section */
+    .payment-methods {
+        margin-top: 2rem;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 2rem;
+    }
+
+    .payment-methods h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+
+    .payment-options {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .payment-option {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .payment-option.active {
+        border-color: #b5a79c;
+        box-shadow: 0 2px 8px rgba(181, 167, 156, 0.1);
+    }
+
+    .payment-option-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem;
+        background: #fff;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .payment-option-header:hover {
+        background: #f8f9fa;
+    }
+
+    .payment-option.active .payment-option-header {
+        background: #f8f9fa;
+    }
+
+    .payment-option-header img {
+        height: 24px;
+        width: auto;
+    }
+
+    .payment-option-header span {
+        font-size: 0.95rem;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .payment-content {
+        display: none;
+        padding: 1.5rem;
+        background: #fff;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .payment-content.active {
+        display: block;
+    }
+
+    /* PayPal Button Container */
+    #paypal-button-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    /* Credit Card Form */
+    .credit-card-form {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .credit-card-form label {
+        display: block;
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+
+    .credit-card-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .credit-card-input:focus {
+        outline: none;
+        border-color: #b5a79c;
+        box-shadow: 0 0 0 2px rgba(181, 167, 156, 0.1);
+    }
+
+    .pay-button {
+        width: 100%;
+        padding: 1rem;
+        background: #b5a79c;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 1rem;
+    }
+
+    .pay-button:hover {
+        background: #a39589;
+        transform: translateY(-1px);
+    }
+
+    /* Dark Mode Styles for Payment Section */
+    body.dark-mode .payment-methods {
+        border-top-color: #444;
+    }
+
+    body.dark-mode .payment-methods h3 {
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .payment-option {
+        border-color: #444;
+        background: #2a2a2a;
+    }
+
+    body.dark-mode .payment-option.active {
+        border-color: #b5a79c;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark-mode .payment-option-header {
+        background: #2a2a2a;
+    }
+
+    body.dark-mode .payment-option-header:hover {
+        background: #333;
+    }
+
+    body.dark-mode .payment-option.active .payment-option-header {
+        background: #333;
+    }
+
+    body.dark-mode .payment-option-header span {
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .payment-content {
+        background: #2a2a2a;
+        border-top-color: #444;
+    }
+
+    body.dark-mode .credit-card-form label {
+        color: #999;
+    }
+
+    body.dark-mode .credit-card-input {
+        background: #333;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .credit-card-input:focus {
+        border-color: #b5a79c;
+        box-shadow: 0 0 0 2px rgba(181, 167, 156, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .payment-option-header {
+            padding: 1rem;
+        }
+
+        .payment-content {
+            padding: 1rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    // Existing cart functions
+    function updateQuantity(productId, change) {
+        const itemElement = document.querySelector(`[data-item-id="${productId}"]`);
+        const quantityElement = itemElement.querySelector('.quantity');
+        let newQuantity = parseInt(quantityElement.textContent) + change;
+        
+        if (newQuantity < 1) return;
+        
+        fetch('{{ path('app_cart_update', {'id': 'PLACEHOLDER'}) }}'.replace('PLACEHOLDER', productId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ quantity: newQuantity })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+
+    function removeItem(productId) {
+        if (!confirm('Are you sure you want to remove this item?')) return;
+        
+        fetch('{{ path('app_cart_remove', {'id': 'PLACEHOLDER'}) }}'.replace('PLACEHOLDER', productId), {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+
+    // PayPal Integration
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load PayPal SDK with proper configuration
+        const paypalScript = document.createElement('script');
+        paypalScript.src = 'https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=USD&intent=capture';
+        paypalScript.async = true;
+        paypalScript.onload = initializePayPal;
+        paypalScript.onerror = handlePayPalSDKError;
+        document.body.appendChild(paypalScript);
+
+        function handlePayPalSDKError() {
+            const paypalContainer = document.querySelector('#paypal-button-container');
+            paypalContainer.innerHTML = `
+                <div style="color: #721c24; background: #f8d7da; padding: 1rem; border-radius: 4px; text-align: center;">
+                    <p style="margin-bottom: 0.5rem;">Unable to load PayPal. Please try:</p>
+                    <ul style="text-align: left; margin: 0.5rem 0;">
+                        <li>Refreshing the page</li>
+                        <li>Checking your internet connection</li>
+                        <li>Disabling any ad blockers</li>
+                    </ul>
+                    <button onclick="window.location.reload()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Retry Loading PayPal
+                    </button>
+                </div>
+            `;
+        }
+
+        function initializePayPal() {
+            if (!window.paypal) {
+                handlePayPalSDKError();
+                return;
+            }
+
+            const totalAmount = '{{ (cart|reduce((total, item) => total + (item.product.price * item.quantity), 0) + 7.90)|number_format(2, '.', '') }}';
+            
+            paypal.Buttons({
+                style: {
+                    layout: 'vertical',
+                    color: 'gold',
+                    shape: 'rect',
+                    label: 'paypal'
+                },
+
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                currency_code: 'USD',
+                                value: totalAmount,
+                                breakdown: {
+                                    item_total: {
+                                        currency_code: 'USD',
+                                        value: '{{ cart|reduce((total, item) => total + (item.product.price * item.quantity), 0)|number_format(2, '.', '') }}'
+                                    },
+                                    shipping: {
+                                        currency_code: 'USD',
+                                        value: '7.90'
+                                    }
+                                }
+                            },
+                            items: [
+                                {% for item in cart %}
+                                {
+                                    name: '{{ item.product.name }}',
+                                    unit_amount: {
+                                        currency_code: 'USD',
+                                        value: '{{ item.product.price|number_format(2, '.', '') }}'
+                                    },
+                                    quantity: '{{ item.quantity }}'
+                                }{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            ]
+                        }]
+                    });
+                },
+
+                onApprove: function(data, actions) {
+                    // Show loading state
+                    const loadingOverlay = document.createElement('div');
+                    loadingOverlay.style.cssText = `
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(255, 255, 255, 0.8);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 9999;
+                    `;
+                    loadingOverlay.innerHTML = `
+                        <div style="text-align: center;">
+                            <div style="border: 4px solid #f3f3f3; border-top: 4px solid #b5a79c; border-radius: 50%; width: 40px; height: 40px; margin: 0 auto; animation: spin 1s linear infinite;"></div>
+                            <p style="margin-top: 1rem; color: #333;">Processing your payment...</p>
+                        </div>
+                    `;
+                    document.body.appendChild(loadingOverlay);
+
+                    return actions.order.capture()
+                        .then(function(details) {
+                            return fetch('{{ path('app_cart_process_payment') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token('payment') }}'
+                                },
+                                body: JSON.stringify({
+                                    orderId: data.orderID,
+                                    paymentMethod: 'paypal',
+                                    details: details
+                                })
+                            });
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(result => {
+                            if (result.success) {
+                                window.location.href = result.redirectUrl;
+                            } else {
+                                throw new Error(result.message || 'Payment processing failed');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Payment error:', error);
+                            document.body.removeChild(loadingOverlay);
+                            
+                            const errorMessage = document.createElement('div');
+                            errorMessage.style.cssText = `
+                                position: fixed;
+                                top: 20px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                background: #f8d7da;
+                                color: #721c24;
+                                padding: 1rem;
+                                border-radius: 4px;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                z-index: 9999;
+                                text-align: center;
+                            `;
+                            errorMessage.innerHTML = `
+                                <p style="margin: 0;">Payment failed: ${error.message}</p>
+                                <button onclick="this.parentElement.remove()" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Close
+                                </button>
+                            `;
+                            document.body.appendChild(errorMessage);
+                            
+                            // Auto-remove error message after 5 seconds
+                            setTimeout(() => {
+                                if (errorMessage.parentElement) {
+                                    errorMessage.remove();
+                                }
+                            }, 5000);
+                        });
+                },
+
+                onError: function(err) {
+                    console.error('PayPal error:', err);
+                    const errorMessage = document.createElement('div');
+                    errorMessage.style.cssText = `
+                        background: #f8d7da;
+                        color: #721c24;
+                        padding: 1rem;
+                        border-radius: 4px;
+                        margin-top: 1rem;
+                        text-align: center;
+                    `;
+                    errorMessage.innerHTML = `
+                        <p style="margin: 0;">PayPal error: ${err.message || 'Unknown error'}</p>
+                        <button onclick="window.location.reload()" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Try Again
+                        </button>
+                    `;
+                    document.querySelector('#paypal-button-container').appendChild(errorMessage);
+                }
+            }).render('#paypal-button-container')
+              .catch(function(error) {
+                  console.error('PayPal render error:', error);
+                  handlePayPalSDKError();
+              });
+        }
+
+        // Payment method toggle functionality
+        const paymentOptions = document.querySelectorAll('.payment-option-header');
+        const paymentContents = document.querySelectorAll('.payment-content');
+        const paymentMethods = document.querySelectorAll('.payment-option');
+
+        paymentOptions.forEach(header => {
+            header.addEventListener('click', () => {
+                const method = header.parentElement.dataset.method;
+                paymentMethods.forEach(pm => pm.classList.remove('active'));
+                paymentContents.forEach(pc => pc.classList.remove('active'));
+                header.parentElement.classList.add('active');
+                document.querySelector(`.payment-content[data-method="${method}"]`).classList.add('active');
+            });
+        });
+    });
+
+    // Add this CSS for the loading animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="cart-container">
+    <div class="cart-header">
+        <div>PRODUIT</div>
+        <div>PRIX</div>
+        <div>QUANTITÉ</div>
+        <div>TOTAL</div>
+    </div>
+
+    {% if cart|length > 0 %}
+        <div class="cart-items">
+            {% for item in cart %}
+                <div class="cart-item">
+                    <div class="product-col">
+                        <button class="remove-item" onclick="removeItem('{{ item.product.id }}')">&times;</button>
+                        <img src="{{ asset('uploads/products/' ~ item.product.images[0].imageOn) }}" 
+                             alt="{{ item.product.name }}">
+                        <div>{{ item.product.name }}</div>
+                    </div>
+                    <div>{{ item.product.price|number_format(2) }} TND</div>
+                    <div>
+                        <div class="quantity-control">
+                            <button class="quantity-btn" onclick="updateQuantity('{{ item.product.id }}', -1)">-</button>
+                            <span class="quantity">{{ item.quantity }}</span>
+                            <button class="quantity-btn" onclick="updateQuantity('{{ item.product.id }}', 1)">+</button>
+                        </div>
+                    </div>
+                    <div>{{ (item.product.price * item.quantity)|number_format(2) }} TND</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-actions">
+            <div class="promo-code">
+                <input type="text" placeholder="Code promo" class="promo-input">
+                <button class="promo-btn">APPLIQUER LE CODE PROMO</button>
+            </div>
+        </div>
+
+        <div class="cart-summary">
+            <div class="summary-row">
+                <span>Sous-total</span>
+                <span>{{ cart|reduce((total, item) => total + (item.product.price * item.quantity), 0)|number_format(2) }} TND</span>
+            </div>
+            <div class="summary-row">
+                <span>Expédition</span>
+                <div class="shipping-info">
+                    <div>Aramex Express 24/48H: 7.90 TND</div>
+                    <div>Livraison à Tunisie.</div>
+                    <a href="#" class="modify-address">Modifier l'adresse</a>
+                </div>
+            </div>
+            <div class="summary-row total">
+                <span>TOTAL</span>
+                <span>{{ (cart|reduce((total, item) => total + (item.product.price * item.quantity), 0) + 7.90)|number_format(2) }} TND</span>
+            </div>
+
+            <div class="payment-methods">
+                <h3>Select Payment Method</h3>
+                <div class="payment-options">
+                    <div class="payment-option active" data-method="paypal">
+                        <div class="payment-option-header">
+                            <img src="{{ asset('assets/images/payments/paypal.svg') }}" alt="PayPal">
+                            <span>Pay with PayPal</span>
+                        </div>
+                        <div class="payment-content active" data-method="paypal">
+                            <div id="paypal-button-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="payment-option" data-method="credit-card">
+                        <div class="payment-option-header">
+                            <img src="{{ asset('assets/images/payments/credit-cards.svg') }}" alt="Credit Card">
+                            <span>Pay with Credit Card</span>
+                        </div>
+                        <div class="payment-content" data-method="credit-card">
+                            <form id="credit-card-form" class="credit-card-form">
+                                <div class="form-group">
+                                    <label for="card-number">Card Number</label>
+                                    <input type="text" id="card-number" class="credit-card-input" 
+                                           placeholder="1234 5678 9012 3456" required
+                                           pattern="\d{4}\s?\d{4}\s?\d{4}\s?\d{4}">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="expiry">Expiry Date</label>
+                                        <input type="text" id="expiry" class="credit-card-input" 
+                                               placeholder="MM/YY" required
+                                               pattern="\d{2}/\d{2}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cvv">CVV</label>
+                                        <input type="text" id="cvv" class="credit-card-input" 
+                                               placeholder="123" required
+                                               pattern="\d{3,4}">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="card-name">Cardholder Name</label>
+                                    <input type="text" id="card-name" class="credit-card-input" 
+                                           placeholder="John Doe" required>
+                                </div>
+                                <button type="submit" class="pay-button">
+                                    Pay {{ (cart|reduce((total, item) => total + (item.product.price * item.quantity), 0) + 7.90)|number_format(2) }} TND
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added any items to your cart yet.</p>
+            <a href="{{ path('app_home') }}" class="continue-shopping">Continue Shopping</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

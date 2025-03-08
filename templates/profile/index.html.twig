@@ -1,0 +1,149 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Profile - MIZA{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div class="profile-avatar mb-3">
+                        <i class="fas fa-user-circle fa-5x"></i>
+                    </div>
+                    <h3 class="mb-0">{{ user.fullName ?? user.email }}</h3>
+                    <p class="text-muted">Member since {{ user.createdAt|date('M Y') }}</p>
+                </div>
+            </div>
+
+            <div class="list-group shadow-sm">
+                <a href="{{ path('app_profile') }}" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-user-cog me-2"></i> Profile Settings
+                </a>
+                <a href="{{ path('app_orders') }}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-shopping-bag me-2"></i> My Orders
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="fas fa-heart me-2"></i> Wishlist
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="fas fa-map-marker-alt me-2"></i> Addresses
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="mb-4">Profile Information</h4>
+                    
+                    <form method="post" action="{{ path('app_profile_update') }}">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="firstName" value="{{ user.firstName ?? '' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="lastName" value="{{ user.lastName ?? '' }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" name="phone" value="{{ user.phone ?? '' }}">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <h4 class="mb-4">Change Password</h4>
+                    <form method="post" action="{{ path('app_profile_change_password') }}">
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" name="currentPassword" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" name="newPassword" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" name="confirmPassword" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        background-color: var(--component-bg);
+    }
+    
+    .list-group-item {
+        background-color: var(--component-bg);
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
+    
+    .list-group-item:hover {
+        background-color: var(--hover-color);
+    }
+    
+    .list-group-item.active {
+        background-color: #2B2F0E;
+        border-color: #2B2F0E;
+    }
+    
+    .profile-avatar {
+        color: var(--text-color-secondary);
+    }
+    
+    .form-control {
+        background-color: var(--background-color);
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
+    
+    .form-control:focus {
+        background-color: var(--background-color);
+        border-color: #2B2F0E;
+        color: var(--text-color);
+        box-shadow: 0 0 0 0.2rem rgba(43, 47, 14, 0.25);
+    }
+    
+    /* Dark mode adjustments */
+    [data-theme="dark"] .list-group-item.active {
+        background-color: #fff;
+        border-color: #fff;
+        color: #1a1a1a;
+    }
+    
+    [data-theme="dark"] .btn-primary {
+        background-color: #fff;
+        border-color: #fff;
+        color: #1a1a1a;
+    }
+    
+    [data-theme="dark"] .btn-primary:hover {
+        background-color: #e6e6e6;
+        border-color: #e6e6e6;
+    }
+</style>
+{% endblock %} 

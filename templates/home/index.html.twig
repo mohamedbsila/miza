@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIZA | Luxury Fashion & Accessories</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <style>
+        /* Product Grid Styles */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .product-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .product-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            position: relative;
+            width: 70%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .product-image .image-off {
+            opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .product-item:hover .image-off {
+            opacity: 1;
+        }
+
+        .product-item h3 {
+            position: absolute;
+            bottom: 20px;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 500;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 2;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Dark mode adjustments */
+        body.dark-mode .product-item h3 {
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .product-item h3 {
+                font-size: 1.2rem;
+                bottom: 15px;
+                left: 15px;
+            }
+        }
+
+        /* Meet Our Icons Section Styles */
+        .meet-icons {
+            padding: 4rem 2rem;
+            background-color: #FEFBEC;
+            transition: background-color 0.3s ease;
+        }
+
+        .icons-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .icons-image {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .icons-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .icons-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .icons-content {
+            padding: 2rem;
+        }
+
+        .icons-content h2 {
+            font-size: 2.5rem;
+            color: #2B2F0E;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .icons-content p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .shop-icons-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: #2B2F0E;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            border: 2px solid #2B2F0E;
+        }
+
+        .shop-icons-btn:hover {
+            background-color: transparent;
+            color: #2B2F0E;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode .meet-icons {
+            background-color: #1a1a1a;
+        }
+
+        body.dark-mode .icons-content h2 {
+            color: #fff;
+        }
+
+        body.dark-mode .icons-content p {
+            color: #999;
+        }
+
+        body.dark-mode .shop-icons-btn {
+            background-color: #fff;
+            color: #1a1a1a;
+            border-color: #fff;
+        }
+
+        body.dark-mode .shop-icons-btn:hover {
+            background-color: transparent;
+            color: #fff;
+        }
+
+        body.dark-mode .icons-image {
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .icons-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .icons-content {
+                padding: 1rem;
+                text-align: center;
+            }
+
+            .icons-content h2 {
+                font-size: 2rem;
+            }
+
+            .icons-image {
+                min-height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .meet-icons {
+                padding: 3rem 1rem;
+            }
+
+            .icons-content h2 {
+                font-size: 1.8rem;
+            }
+
+            .icons-content p {
+                font-size: 1rem;
+            }
+        }
+
+        /* Cordless Section Styles */
+        .cordless-section {
+            padding: 4rem 2rem;
+            background-color: #FEFBEC;
+            transition: background-color 0.3s ease;
+        }
+
+        .cordless-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .cordless-image {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            order: 2;
+        }
+
+        .cordless-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .cordless-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .cordless-content {
+            padding: 2rem;
+            order: 1;
+        }
+
+        .cordless-content h2 {
+            font-size: 2.5rem;
+            color: #2B2F0E;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .cordless-content p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .shop-cordless-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: #2B2F0E;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            border: 2px solid #2B2F0E;
+        }
+
+        .shop-cordless-btn:hover {
+            background-color: transparent;
+            color: #2B2F0E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(43,47,14,0.2);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode .cordless-section {
+            background-color: #1a1a1a;
+        }
+
+        body.dark-mode .cordless-content h2 {
+            color: #fff;
+        }
+
+        body.dark-mode .cordless-content p {
+            color: #999;
+        }
+
+        body.dark-mode .shop-cordless-btn {
+            background-color: #fff;
+            color: #1a1a1a;
+            border-color: #fff;
+        }
+
+        body.dark-mode .shop-cordless-btn:hover {
+            background-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(255,255,255,0.2);
+        }
+
+        body.dark-mode .cordless-image {
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .cordless-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .cordless-content {
+                padding: 1rem;
+                text-align: center;
+                order: 2;
+            }
+
+            .cordless-image {
+                order: 1;
+                min-height: 300px;
+            }
+
+            .cordless-content h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cordless-section {
+                padding: 3rem 1rem;
+            }
+
+            .cordless-content h2 {
+                font-size: 1.8rem;
+            }
+
+            .cordless-content p {
+                font-size: 1rem;
+            }
+        }
+
+        /* Search icon styling */
+        .search-toggle svg {
+            width: 24px;
+            height: 24px;
+            fill: #2B2F0E;
+            transition: fill 0.3s ease;
+        }
+
+        body.dark-mode .search-toggle svg {
+            fill: #fff;
+        }
+
+        /* Search Overlay Styles */
+        .search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.98);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .search-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 100px auto 0;
+            padding: 0 20px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #2B2F0E;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 0;
+            font-size: 24px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #2B2F0E;
+        }
+
+        .search-button {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .search-button:hover {
+            opacity: 0.8;
+        }
+
+        .search-button svg {
+            width: 24px;
+            height: 24px;
+            fill: #2B2F0E;
+        }
+
+        body.dark-mode .search-button svg {
+            fill: #fff;
+        }
+
+        .search-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 40px;
+            background: none;
+            border: none;
+            color: #2B2F0E;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .search-results {
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .search-result-item:hover {
+            background-color: rgba(43, 47, 14, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .search-result-image {
+            width: 80px;
+            height: 80px;
+            margin-right: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .search-result-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .search-result-info {
+            flex: 1;
+        }
+
+        .search-result-name {
+            font-size: 18px;
+            font-weight: 500;
+            color: #2B2F0E;
+            margin-bottom: 5px;
+        }
+
+        .search-result-category {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .search-result-price {
+            font-size: 16px;
+            font-weight: 500;
+            color: #2B2F0E;
+        }
+
+        /* Dark mode styles for search */
+        body.dark-mode .search-overlay {
+            background-color: rgba(26, 26, 26, 0.98);
+        }
+
+        body.dark-mode .search-input-wrapper,
+        body.dark-mode .search-results {
+            border-color: #fff;
+        }
+
+        body.dark-mode .search-input {
+            color: #fff;
+        }
+
+        body.dark-mode .search-close {
+            color: #fff;
+        }
+
+        body.dark-mode .search-result-item {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .search-result-name,
+        body.dark-mode .search-result-price {
+            color: #fff;
+        }
+
+        body.dark-mode .search-result-category {
+            color: #999;
+        }
+
+        body.dark-mode .search-result-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Logo transparency when search is active */
+        .search-overlay.active ~ .main-nav .nav-logo img {
+            opacity: 0.5;
+        }
+
+        /* Search suggestions */
+        .search-suggestions {
+            padding: 20px 0;
+        }
+
+        .search-suggestion {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(43, 47, 14, 0.1);
+        }
+
+        .search-suggestion a {
+            color: #2B2F0E;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .search-suggestion a:hover {
+            color: #666;
+        }
+
+        body.dark-mode .search-suggestion {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .search-suggestion a {
+            color: #fff;
+        }
+
+        .search-results-info {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .search-results-info h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .search-results-info p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        body.dark-mode .search-results-info,
+        body.dark-mode .search-results-info h2 {
+            color: #fff;
+        }
+
+        body.dark-mode .search-results-info p {
+            color: #999;
+        }
+
+        .inspiration-galleries {
+            padding: 60px 0;
+            background: transparent;
+        }
+
+        .galleries-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding: 0 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            overflow: hidden;
+        }
+
+        .gallery-link {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: white;
+            text-align: center;
+            transform: translateY(20%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-title {
+            font-size: 1.5rem;
+            margin: 0 0 1rem;
+            font-weight: 500;
+        }
+
+        .gallery-button {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: white;
+            color: #2B2F0E;
+            border-radius: 4px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-link:hover .gallery-image {
+            transform: scale(1.05);
+        }
+
+        .gallery-link:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        .gallery-link:hover .gallery-button {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 1024px) {
+            .galleries-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .galleries-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Large Hero Logo -->
+    <div class="hero-logo">
+        <object data="{{ asset('assets/images/logo MIZA Abyeth (1).png') }}" type="image/png" class="miza-logo"></object>
+    </div>
+
+
+
+    <!-- Main Navigation -->
+    <nav class="main-nav">
+        <div class="nav-wrapper">
+            <div class="nav-left">
+                <!-- Removed menu-toggle from here -->
+            </div>
+            <div class="nav-center">
+                <div class="nav-logo">
+                    <img src="{{ asset('assets/images/logo MIZA.png') }}" alt="MIZA" class="miza-nav-logo">
+                </div>
+            </div>
+            <div class="nav-right">
+
+                <button class="theme-toggle" id="themeToggle">
+                    <svg class="sun-icon" viewBox="0 0 24 24">
+                        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24">
+                        <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+                    </svg>
+                </button>
+                <a href="#" class="search-toggle">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </a>
+                <a href="#" class="account-toggle">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </a>
+                <a href="panier.html" class="cart-toggle">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                </a>
+                <button class="menu-toggle">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu Backdrop -->
+    <div class="menu-backdrop"></div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay">
+        <button class="menu-close">&times;</button>
+        <div class="menu-content">
+            <ul class="menu-categories">
+                {% for category in categories %}
+                    <li class="menu-category" style="--index: {{ loop.index0 }}">
+                        <a href="{{ path('app_products', {'category': category.id}) }}">{{ category.name|upper }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="menu-footer">
+                <ul class="menu-footer-links">
+                    <li><a href="#">Store Search</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">My Orders</a></li>
+                    <li><a href="#">Services</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close Button for Menu -->
+    <button class="menu-close">×</button>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-image">
+            <img src="{{ asset(content.hero.image ?? 'assets/images/464949950_2012981075804365_7766533349930169955_n.jpeg') }}" alt="Hero Image">
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h2>{{ content.hero.title ?? 'Luxury Collection' }}</h2>
+                <a href="#" class="hero-button">{{ content.hero.buttonText ?? 'DISCOVER MORE' }}</a>
+            </div>
+        </div>
+    </section>
+   <!-- Explore Our Products Section -->
+<section class="explore-products" style="background: transparent; padding: 40px 0;">
+    <h1 class="section-title" style="text-align: center; margin-bottom: 40px; color: #2B2F0E;">{{ content.explore.title ?? 'Explore Our Products' }}</h1>
+    <div class="product-grid">
+        {% for product in exploreProducts %}
+            <div class="product-item" style="background: transparent; position: relative;">
+                {% if product.images is not empty %}
+                    {% set mainImage = product.images|first %}
+                    <a href="{{ path('app_product_show', {'id': product.id}) }}" class="product-link" style="position: relative; display: block;">
+                        <img src="{{ asset('uploads/products/' ~ mainImage.imageOn) }}"
+                             data-image-off="{{ asset('uploads/products/' ~ mainImage.imageOff) }}"
+                             alt="{{ product.name }}"
+                             class="product-image"
+                             onmouseover="this.src = this.getAttribute('data-image-off')"
+                             onmouseout="this.src = '{{ asset('uploads/products/' ~ mainImage.imageOn) }}'"
+                             style="width: 100%; height: auto; transition: all 0.3s ease;">
+                        <h3 style="position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; color: #2B2F0E; margin: 0; padding: 10px; background: rgba(255, 255, 255, 0.8);">{{ product.name }}</h3>
+                    </a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    {% if content.explore.buttonText %}
+        <div class="text-center mt-4">
+            <a href="{{ path('app_products') }}" class="btn btn-outline-dark">{{ content.explore.buttonText }}</a>
+        </div>
+    {% endif %}
+</section>
+
+<!-- Meet Our Icons Section -->
+<section class="meet-icons">
+    <div class="icons-container">
+        <div class="icons-image">
+            <img src="{{ asset(content.icons.image ?? 'assets/pic/hex/119792785_2620997588214115_1340898421601523763_n..jpg') }}" alt="Elegant illustration of lighting design">
+        </div>
+        <div class="icons-content">
+            <h2>{{ content.icons.title ?? 'Meet Our Icons' }}</h2>
+            <p>{{ content.icons.description ?? 'Dedicated to creating original lighting that matches modern sensibilities and timeless elegance.' }}</p>
+            <a href="#" class="shop-icons-btn">{{ content.icons.buttonText ?? 'SHOP ICONS' }}</a>
+        </div>
+    </div>
+</section>
+
+<!-- Cordless & Rechargeable Section -->
+<section class="cordless-section">
+    <div class="cordless-container">
+        <div class="cordless-content">
+            <h2>{{ content.cordless.title ?? 'Cordless & Rechargeable Lamps' }}</h2>
+            <p>{{ content.cordless.description ?? 'Browse our wide range of elegant cordless and rechargeable lamps, designed to give you a wealth of fully portable and incredibly versatile lighting options.' }}</p>
+            <a href="#" class="shop-cordless-btn">{{ content.cordless.buttonText ?? 'SHOP CORDLESS & RECHARGEABLES' }}</a>
+        </div>
+        <div class="cordless-image">
+            <img src="{{ asset(content.cordless.image ?? 'assets/pic/hex/132062590_400120488076611_6403956975684489687_n..jpg') }}" alt="Modern cordless table lamp">
+        </div>
+    </div>
+</section>
+
+
+<!-- Shop Section -->
+<section class="shop-section">
+    <button class="nav-arrow prev" aria-label="Previous image">
+        <svg viewBox="0 0 24 24">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+    </button>
+    <button class="nav-arrow next" aria-label="Next image">
+        <svg viewBox="0 0 24 24">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+        </svg>
+    </button>
+    <div class="shop-content">
+        <h1 class="shop-title">Shop</h1>
+        <div class="shop-underline"></div>
+    </div>
+    <div class="shop-images">
+        <img src="{{ asset('assets/pic/wex/edit.png') }}" alt="Shop Image 1" class="active">
+        <img src="{{ asset('assets/images/Screenshot_22-1-2025_22500_www.instagram.com.jpeg') }}" alt="Shop Image 2">
+        <img src="{{ asset('assets/images/Screenshot_22-1-2025_225333_www.instagram.com.jpeg') }}" alt="Shop Image 3">
+    </div>
+</section>
+
+    <!-- Full Screen Menu Overlay -->
+    <div class="menu-overlay">
+        <button class="menu-close">&times;</button>
+        <div class="menu-content">
+            <ul class="menu-categories">
+                <li class="menu-category"><a href="products.html?category=gifts">Gifts</a></li>
+                <li class="menu-category"><a href="products.html?category=novelties">Novelties</a></li>
+                <li class="menu-category"><a href="products.html?category=bags">Bags</a></li>
+                <li class="menu-category"><a href="products.html?category=travel">Travel</a></li>
+                <li class="menu-category"><a href="products.html?category=ladies">Ladies</a></li>
+                <li class="menu-category"><a href="products.html?category=messrs">Messrs</a></li>
+                <li class="menu-category"><a href="products.html?category=children">Children</a></li>
+                <li class="menu-category"><a href="products.html?category=jewelry">Jewellery & Watches</a></li>
+                <li class="menu-category"><a href="products.html?category=fragrance">Fragrances and make-up</a></li>
+                <li class="menu-category"><a href="products.html?category=decor">Décor & Lifestyle</a></li>
+            </ul>
+            <div class="menu-footer">
+                <ul class="menu-footer-links">
+                    <li><a href="#">Store Search</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">My Orders</a></li>
+                    <li><a href="#">Services</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <section class="inspiration-galleries">
+        <h2 class="section-title">{{ content.galleries.title ?? 'Inspiration Galleries' }}</h2>
+        <div class="galleries-grid">
+            {% for gallery_key, gallery in content.galleries.galleries %}
+                <div class="gallery-item">
+                    <a href="{{ path('app_gallery_' ~ gallery_key) }}" class="gallery-link">
+                        <img src="{{ asset(gallery.image) }}"
+                             alt="{{ gallery.title }}"
+                             class="gallery-image"
+                             onerror="this.src='{{ asset('assets/images/placeholder.jpg') }}'">
+                        <div class="gallery-overlay">
+                            <h3 class="gallery-title">{{ gallery.title }}</h3>
+                            <span class="gallery-button">{{ gallery.buttonText }}</span> {# Use gallery-specific buttonText #}
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- The Spotlight Section -->
+    <section class="spotlight-section">
+        <h1>The Spotlight</h1>
+        <div class="spotlight-grid">
+            <div class="spotlight-item">
+                <img src="{{ asset('assets/images/light/on.jpg') }}" alt="House Beautiful">
+                <h3>10 Favorite Moments in the House Beautiful Whole Home 2024</h3>
+                <p>From the grand yet cozy living room to the pattern-packed game room, every space in this energy-efficient mountain-modern home is sure to stick with you. 11 design teams make their mark on a mountain-modern home in Asheville, North Carolina.</p>
+                <a href="#" class="read-more">READ MORE</a>
+            </div>
+            <div class="spotlight-item">
+                <img src="{{ asset('assets/images/light/on.jpg') }}" alt="Paloma Contreras Design">
+                <h3>At Home with Paloma Contreras</h3>
+                <p>Making the most of a layout that separates entertaining spaces from relaxed family zones, Visual Comfort & Co. design partner Paloma Contreras transforms a center-hall brick home with her signature blend of tradition, modernity and color.</p>
+                <a href="#" class="read-more">READ MORE</a>
+            </div>
+            <div class="spotlight-item">
+                <img src="{{ asset('assets/images/light/on.jpg') }}" alt="Paranjape Project">
+                <h3>Lori Paranjape Builds a Showhouse to Call Home</h3>
+                <p>Rather than conforming to a particular style, The Paranjape Project is an ode to the designer's deep love of process, craft and detail, drawing upon reference points ranging from California cool to classic colonial. If the exterior is a musical mash-up, the interior plays like a greatest hits album full of clever ideas developed over time.</p>
+                <a href="#" class="read-more">READ MORE</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Sections -->
+    <section class="services-section">
+        <!-- Systems Services -->
+        <div class="service-item systems-service">
+            <div class="service-image">
+                <img src="{{ asset('assets/pic/s_ex/155495834_1266119430452179_6489804456871045246_n..jpg') }}" alt="Systems Services">
+            </div>
+            <div class="service-content">
+                <h2>Introducing Systems Services</h2>
+                <p>Enhance the aesthetics, ambiance and functionality of your space by revolutionizing your lighting and technology experience. Our team creates multi-layered lighting and shading plans that elevate the overall design.</p>
+                <a href="#" class="explore-btn">EXPLORE SYSTEMS</a>
+            </div>
+        </div>
+
+        <!-- Architectural Lighting -->
+        <div class="service-item architectural-service">
+            <div class="service-content">
+                <h2>Architectural Lighting Design Services</h2>
+                <p>Meet with our lighting designers to discuss design goals and start the process of developing your lighting plan.</p>
+                <a href="#" class="learn-more-btn">LEARN MORE</a>
+            </div>
+            <div class="service-image">
+                <img src="{{ asset('assets/pic/s_ex/338135509_535135172112234_5597787009447069224_n..jpg') }}" alt="Architectural Lighting Design">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-main">
+            <div class="footer-nav">
+                <div class="footer-menu">
+                    <a href="#">CONTACT</a>
+                    <a href="#">TECHNICAL</a>
+                    <a href="#">PROJECTS</a>
+                    <a href="#">NEWS</a>
+                    <a href="#">DEALERS</a>
+                    <a href="#">PORTFOLIO</a>
+                </div>
+                <div class="footer-contact">
+                    <div class="contact-info">
+                        <p>495 Railway St.</p>
+                        <p>Vancouver BC</p>
+                        <p>V6A 1A7</p>
+                        <p>+1 604 639 5195</p>
+                    </div>
+                    <div class="social-links">
+                        <a href="#">Facebook</a>
+                        <a href="#">Instagram</a>
+                        <a href="#">Twitter</a>
+                        <a href="#">Vimeo</a>
+                    </div>
+                </div>
+            </div>
+            <a href="#" class="newsletter-signup">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+                Sign Up for our Newsletter
+            </a>
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <p>© 2025 MIZA</p>
+                    <div class="legal-links">
+                        <a href="#">Privacy</a>
+                        <a href="#">Terms</a>
+                        <a href="#">Site Credits</a>
+                        <a href="#">Cookie Settings</a>
+                    </div>
+                </div>
+                <div class="footer-logo">
+                    <img src="{{ asset('assets/images/logo MIZA Abyeth (1).png') }}" alt="MIZA Logo">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay">
+        <button class="search-close">&times;</button>
+        <div class="search-container">
+            <form action="{{ path('app_products') }}" method="get" id="searchForm">
+                <div class="search-input-wrapper">
+                    <input type="text" name="q" class="search-input" placeholder="Search products..."
+                        autocomplete="off">
+                    <button type="submit" class="search-button">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script>
+        // Menu toggle functionality
+        const menuToggle = document.querySelector('.menu-toggle');
+        const menuBackdrop = document.querySelector('.menu-backdrop');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const menuClose = document.querySelector('.menu-close');
+
+        menuToggle.addEventListener('click', () => {
+            menuBackdrop.classList.add('active');
+            menuOverlay.classList.add('active');
+            document.body.classList.add('menu-open');
+            if (menuClose) menuClose.classList.add('active');
+        });
+
+        menuBackdrop.addEventListener('click', () => {
+            menuBackdrop.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            if (menuClose) menuClose.classList.remove('active');
+        });
+
+        if (menuClose) {
+            menuClose.addEventListener('click', () => {
+                menuBackdrop.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.classList.remove('menu-open');
+                menuClose.classList.remove('active');
+            });
+        }
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('theme');
+
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.classList.add('dark-mode');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeToggle.classList.toggle('dark-mode');
+
+            localStorage.setItem('theme',
+                document.body.classList.contains('dark-mode') ? 'dark' : 'light'
+            );
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            const searchForm = document.getElementById('searchForm');
+            const searchToggle = document.querySelector('.search-toggle');
+            const searchOverlay = document.querySelector('.search-overlay');
+            const searchClose = document.querySelector('.search-close');
+            const searchInput = document.querySelector('.search-input');
+            const searchResults = document.querySelector('.search-results');
+            let searchTimeout;
+
+            searchToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                searchOverlay.classList.add('active');
+                setTimeout(() => searchInput.focus(), 100);
+            });
+
+            searchClose.addEventListener('click', () => {
+                searchOverlay.classList.remove('active');
+                searchInput.value = '';
+                searchResults.innerHTML = '';
+            });
+
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const query = searchInput.value.trim();
+                if (query) {
+                    searchForm.submit();
+                }
+            });
+
+            // Add click handler for search button
+            const searchButton = document.querySelector('.search-button');
+            searchButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                const query = searchInput.value.trim();
+                if (query) {
+                    searchForm.submit();
+                }
+            });
+
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                const query = e.target.value.trim();
+
+                if (query.length < 2) {
+                    searchResults.innerHTML = '';
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => {
+                    fetch(`/api/search?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            searchResults.innerHTML = '';
+
+                            if (data.results.length > 0) {
+                                data.results.forEach(product => {
+                                    const resultItem = document.createElement('div');
+                                    resultItem.className = 'search-result-item';
+                                    resultItem.innerHTML = `
+                                        <div class="search-result-image">
+                                            <img src="${product.image}" alt="${product.name}">
+                                        </div>
+                                        <div class="search-result-info">
+                                            <div class="search-result-name">${product.name}</div>
+                                            <div class="search-result-category">${product.category || ''}</div>
+                                            <div class="search-result-price">$${product.price}</div>
+                                        </div>
+                                    `;
+                                    resultItem.addEventListener('click', () => {
+                                        window.location.href = `/products/${product.id}`;
+                                    });
+                                    searchResults.appendChild(resultItem);
+                                });
+                            } else if (data.suggestions.length > 0) {
+                                const suggestionsContainer = document.createElement('div');
+                                suggestionsContainer.className = 'search-suggestions';
+                                data.suggestions.forEach(suggestion => {
+                                    const suggestionItem = document.createElement('div');
+                                    suggestionItem.className = 'search-suggestion';
+                                    suggestionItem.innerHTML = `<a href="/products?q=${encodeURIComponent(suggestion)}">${suggestion}</a>`;
+                                    suggestionsContainer.appendChild(suggestionItem);
+                                });
+                                searchResults.appendChild(suggestionsContainer);
+                            } else {
+                                searchResults.innerHTML = '<div class="search-results-info"><p>No products found</p></div>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            searchResults.innerHTML = '<div class="search-results-info"><p>An error occurred while searching</p></div>';
+                        });
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>

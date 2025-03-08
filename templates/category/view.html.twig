@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ category.name }} - Products{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>{{ category.name }}</h1>
+        {% if category.description %}
+            <p class="lead">{{ category.description }}</p>
+        {% endif %}
+
+        <div class="row g-4 mt-3">
+            {% for product in products %}
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100">
+                        {% if product.images is not empty %}
+                            {% set primaryImage = null %}
+                            {% for image in product.images %}
+                                {% if image.isPrimary %}
+                                    {% set primaryImage = image %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if primaryImage %}
+                                <img src="{{ asset(primaryImage.imageOn) }}" 
+                                     class="card-img-top" 
+                                     alt="{{ product.name }}"
+                                     onmouseover="this.src='{{ asset(primaryImage.imageOff) }}'"
+                                     onmouseout="this.src='{{ asset(primaryImage.imageOn) }}'">
+                            {% else %}
+                                <img src="{{ asset(product.images[0].imageOn) }}" 
+                                     class="card-img-top" 
+                                     alt="{{ product.name }}"
+                                     onmouseover="this.src='{{ asset(product.images[0].imageOff) }}'"
+                                     onmouseout="this.src='{{ asset(product.images[0].imageOn) }}'">
+                            {% endif %}
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">
+                                {{ (product.price/100)|number_format(2, '.', ',') }} €
+                            </p>
+                            <a href="{{ path('app_products_show', {'id': product.id}) }}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <p>No products found in this category.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %} 

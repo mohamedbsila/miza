@@ -1,0 +1,46 @@
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###
+
+###> Custom exclusions ###
+.idea/
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+###< Custom exclusions ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> Public assets and large files ###
+/public/assets/images/**/*.{gif,jpg,jpeg,png}
+/public/assets/pic/**/*
+/public/assets/img/**/*
+/public/uploads/*
+!/public/uploads/.gitkeep
+/public/**/*.{gif,jpg,jpeg,png,mp4,mov,avi}
+*.rar
+*.zip
+*.tar.gz
+*.7z
+
+# Keep specific brand assets
+!/public/assets/images/logo*.{svg,png}
+!/public/assets/images/payments/*.svg
+###< Public assets and large files ###

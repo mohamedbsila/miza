@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Test Test | MIZA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('products.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/styleP.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/visual-comfort.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/cart.css') }}">
+    <style>
+        /* ... existing styles ... */
+        
+        .product-image-wrapper {
+            position: relative;
+        }
+        
+        .product-image-photo {
+            width: 100%;
+            height: auto;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .product-image-photo.hover-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+        }
+        
+        /* Variants styling */
+        .variants {
+            margin-top: 10px;
+        }
+        
+        .slider-wrapper {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .slider-wrapper img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            margin-right: 4px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        
+        .slider-wrapper img:hover {
+            border-color: #333;
+        }
+
+        /* Search icon styling */
+        .search-toggle svg {
+            width: 18px;
+            height: 18px;
+            stroke: #000;  /* Black in light mode */
+        }
+
+        /* Keep the icon white in dark mode */
+        body.dark-mode .search-toggle svg {
+            stroke: #fff;
+        }
+
+        /* Search Overlay Styles */
+        .search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 999; /* Lower z-index to keep logo visible */
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .search-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 800px;
+            margin: 100px auto 0;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 0;
+            font-size: 24px;
+            border: none;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+            background: transparent;
+            outline: none;
+            color: #000;
+            flex-grow: 1;
+        }
+
+        .search-button {
+            background: none;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .search-button:hover {
+            transform: scale(1.1);
+        }
+
+        .search-button svg {
+            width: 24px;
+            height: 24px;
+            stroke: #000;
+        }
+
+        body.dark-mode .search-button svg {
+            stroke: #fff;
+        }
+
+        .search-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            color: #000;
+            z-index: 2;
+        }
+
+        .search-results {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 8px;
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .search-result-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-result-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            margin-right: 20px;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .search-result-info {
+            flex-grow: 1;
+        }
+
+        .search-result-name {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #000;
+        }
+
+        .search-result-category {
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 14px;
+        }
+
+        .search-result-price {
+            font-weight: bold;
+            font-size: 16px;
+            color: #000;
+        }
+
+        /* Dark mode styles for search */
+        body.dark-mode .search-overlay {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .search-input-wrapper,
+        body.dark-mode .search-results {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .search-input {
+            color: #fff;
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+
+        body.dark-mode .search-close {
+            color: #fff;
+        }
+
+        body.dark-mode .search-result-item {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        body.dark-mode .search-result-name,
+        body.dark-mode .search-result-price {
+            color: #fff;
+        }
+
+        body.dark-mode .search-result-category {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        body.dark-mode .search-result-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Logo transparency when search is active */
+        .nav-logo img {
+            transition: opacity 0.3s ease;
+        }
+
+        .search-overlay.active ~ .main-nav .nav-logo img {
+            opacity: 0.2;
+        }
+
+        /* Remove any logo opacity changes */
+        .nav-logo {
+            position: relative;
+            z-index: 1000; /* Higher z-index than search overlay */
+        }
+
+        /* Add styles for suggestions */
+        .search-suggestions {
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .search-suggestion {
+            color: #666;
+            font-style: italic;
+            margin: 5px 0;
+        }
+
+        .search-suggestion a {
+            color: #000;
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+
+        .search-suggestion a:hover {
+            text-decoration: underline;
+        }
+
+        body.dark-mode .search-suggestion {
+            color: #999;
+        }
+
+        body.dark-mode .search-suggestion a {
+            color: #fff;
+        }
+
+        .search-results-info {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .search-results-info h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .search-results-info p {
+            font-size: 16px;
+            color: #666;
+            margin: 0;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 50px 20px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        body.dark-mode .search-results-info,
+        body.dark-mode .no-results {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+        
+        body.dark-mode .search-results-info p {
+            color: #999;
+        }
+
+        /* Add these new styles */
+        .filter-categories {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            width: 250px;
+        }
+
+        .filter-btn.active + .filter-categories {
+            display: block;
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        .filter-select, .sort-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .filter-select:hover, .sort-select:hover {
+            border-color: #999;
+        }
+
+        body.dark-mode .filter-categories {
+            background: #1a1a1a;
+            border: 1px solid #333;
+        }
+
+        body.dark-mode .filter-select,
+        body.dark-mode .sort-select {
+            background: #1a1a1a;
+            color: white;
+            border-color: #333;
+        }
+
+        body.dark-mode .filter-select:hover,
+        body.dark-mode .sort-select:hover {
+            border-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Navigation -->
+    <nav class="main-nav">
+        <div class="nav-wrapper">
+            <div class="nav-left">
+                <a href="{{ path('app_home') }}" class="contact-link">HOME</a>
+            </div>
+            <div class="nav-center">
+                <div class="nav-logo">
+                    <img src="{{ asset('assets/images/logo MIZA.png') }}" alt="MIZA Logo">
+                </div>
+            </div>
+            <div class="nav-right">
+                <button class="menu-toggle">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </button>
+                <button class="theme-toggle" id="themeToggle">
+                    <svg class="sun-icon" viewBox="0 0 24 24">
+                        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24">
+                        <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+                    </svg>
+                </button>
+                <button class="light-switch-toggle" aria-label="Toggle dark mode">
+                    <img src="https://www.svgrepo.com/show/441672/light-switch-on.svg" alt="Light Switch On" class="switch-on">
+                    <img src="https://www.svgrepo.com/show/441673/light-switch-off.svg" alt="Light Switch Off" class="switch-off">
+                </button>
+                <a href="#" class="search-toggle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </a>
+                <a href="#" class="cart-toggle">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 20a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm8 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                </a>
+               
+            </div>
+        </div>
+    </nav>
+
+    <!-- Product Header -->
+    <div class="product-breadcrumb">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/outdoor">Outdoor</a></li>
+                    <li class="breadcrumb-item active">Ceiling</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Product Title Section -->
+    <div class="product-title-section">
+        <div class="container">
+            <h1>Test Test Test</h1>
+            <p class="description">Brighten the covered spaces of your home's exterior with selections from Visual Comfort & Co.'s extensive and carefully curated collection of Test Test Test, expertly crafted with premium materials by world-class designers to help you accentuate the architecture of your home while making your hosting areas more inviting.</p>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="container">
+            <div class="filter-wrapper">
+                <div class="filter-left">
+                    <button class="filter-btn">FILTER BY</button>
+                    <div class="filter-categories">
+                        <div class="filter-group">
+                            <select name="category" class="filter-select">
+                                <option value="">CATEGORY</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if app.request.query.get('category') == category.id %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                        <div class="filter-group">
+                            <select name="finish" class="filter-select">
+                                <option value="">FINISH</option>
+                                {% for finish in finishes %}
+                                    <option value="{{ finish }}" {% if app.request.query.get('finish') == finish %}selected{% endif %}>
+                                        {{ finish }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                </div>
+                        <div class="filter-group">
+                            <select name="style" class="filter-select">
+                                <option value="">STYLE</option>
+                                {% for style in styles %}
+                                    <option value="{{ style }}" {% if app.request.query.get('style') == style %}selected{% endif %}>
+                                        {{ style }}
+                                    </option>
+                                {% endfor %}
+                        </select>
+                    </div>
+                        <div class="filter-group">
+                            <select name="height" class="filter-select">
+                                <option value="">HEIGHT</option>
+                                {% for height in heights %}
+                                    <option value="{{ height }}" {% if app.request.query.get('height') == height %}selected{% endif %}>
+                                        {{ height }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                </div>
+                        <div class="filter-group">
+                            <select name="width" class="filter-select">
+                                <option value="">WIDTH</option>
+                                {% for width in widths %}
+                                    <option value="{{ width }}" {% if app.request.query.get('width') == width %}selected{% endif %}>
+                                        {{ width }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+            </div>
+                        <div class="filter-group">
+                            <select name="designer" class="filter-select">
+                                <option value="">DESIGNER</option>
+                                {% for designer in designers %}
+                                    <option value="{{ designer.id }}" {% if app.request.query.get('designer') == designer.id %}selected{% endif %}>
+                                        {{ designer.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+        </div>
+                        <div class="filter-group">
+                            <select name="collection" class="filter-select">
+                                <option value="">COLLECTION</option>
+                                {% for collection in collections %}
+                                    <option value="{{ collection }}" {% if app.request.query.get('collection') == collection %}selected{% endif %}>
+                                        {{ collection }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+    </div>
+                        <div class="filter-group">
+                            <select name="lamping" class="filter-select">
+                                <option value="">LAMPING</option>
+                                {% for lamp in lampings %}
+                                    <option value="{{ lamp }}" {% if app.request.query.get('lamping') == lamp %}selected{% endif %}>
+                                        {{ lamp }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                        <div class="filter-group">
+                            <select name="color_temperature" class="filter-select">
+                                <option value="">COLOR TEMPERATURE</option>
+                                {% for temp in colorTemperatures %}
+                                    <option value="{{ temp }}" {% if app.request.query.get('color_temperature') == temp %}selected{% endif %}>
+                                        {{ temp }}K
+                                    </option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                        <div class="filter-group">
+                            <select name="dimming" class="filter-select">
+                                <option value="">DIMMING</option>
+                                {% for dim in dimmings %}
+                                    <option value="{{ dim }}" {% if app.request.query.get('dimming') == dim %}selected{% endif %}>
+                                        {{ dim }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <select name="input_voltage" class="filter-select">
+                                <option value="">INPUT VOLTAGE</option>
+                                {% for voltage in inputVoltages %}
+                                    <option value="{{ voltage }}" {% if app.request.query.get('input_voltage') == voltage %}selected{% endif %}>
+                                        {{ voltage }}V
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <select name="price_range" class="filter-select">
+                                <option value="">PRICE</option>
+                                <option value="0-100" {% if app.request.query.get('price_range') == '0-100' %}selected{% endif %}>$0 - $100</option>
+                                <option value="100-500" {% if app.request.query.get('price_range') == '100-500' %}selected{% endif %}>$100 - $500</option>
+                                <option value="500-1000" {% if app.request.query.get('price_range') == '500-1000' %}selected{% endif %}>$500 - $1000</option>
+                                <option value="1000+" {% if app.request.query.get('price_range') == '1000+' %}selected{% endif %}>$1000+</option>
+                            </select>
+                        </div>
+                        </div>
+                        </div>
+                <div class="filter-right">
+                    <span class="item-count">{{ products|length }} ITEMS</span>
+                    <div class="sort-dropdown">
+                        <select name="sort" class="sort-select">
+                            <option value="featured" {% if app.request.query.get('sort') == 'featured' %}selected{% endif %}>FEATURED</option>
+                            <option value="price_asc" {% if app.request.query.get('sort') == 'price_asc' %}selected{% endif %}>PRICE LOW TO HIGH</option>
+                            <option value="price_desc" {% if app.request.query.get('sort') == 'price_desc' %}selected{% endif %}>PRICE HIGH TO LOW</option>
+                            <option value="newest" {% if app.request.query.get('sort') == 'newest' %}selected{% endif %}>NEWEST</option>
+                        </select>
+                    </div>
+                    </div>
+                    </div>
+                        </div>
+                        </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid-section">
+        <div class="container">
+            {% if search_query is defined and search_query is not empty %}
+                <div class="search-results-info mb-4">
+                    <h2>Search Results for "{{ search_query }}"</h2>
+                    <p>Found {{ products|length }} products</p>
+                    </div>
+            {% endif %}
+            
+            {% if products|length > 0 %}
+                <ol class="product-grid">
+                    {% for product in products %}
+                    <li class="product-card" index="{{ loop.index }}">
+                    <div class="product-image-wrapper">
+                            <a href="{{ path('app_product_show', {'id': product.id}) }}">
+                            <picture>
+                                    {% if product.images|length > 0 %}
+                                        {% set primaryImage = null %}
+                                        {% for image in product.images %}
+                                            {% if image.isPrimary %}
+                                                {% set primaryImage = image %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if primaryImage %}
+                                            <img loading="lazy" class="product-image-photo" src="{{ asset('uploads/products/' ~ primaryImage.imageOff) }}" alt="{{ product.name }}">
+                                            <img loading="lazy" class="product-image-photo hover-image" src="{{ asset('uploads/products/' ~ primaryImage.imageOn) }}" alt="{{ product.name }} - Light On">
+                                        {% else %}
+                                            <img loading="lazy" class="product-image-photo" src="{{ asset('uploads/products/' ~ product.image) }}" alt="{{ product.name }}">
+                                        {% endif %}
+                                    {% else %}
+                                        <img loading="lazy" class="product-image-photo" src="{{ asset('uploads/products/' ~ product.image) }}" alt="{{ product.name }}">
+                                    {% endif %}
+                            </picture>
+                        </a>
+                    </div>
+                    <div class="variants">
+                        <ul class="slider-wrapper">
+                            <li aria-selected="false">
+                                <a href="#">
+                                        {# Default image first #}
+                                        <img loading="lazy" 
+                                             src="{{ asset('uploads/products/' ~ product.image) }}" 
+                                             alt="{{ product.name }}"
+                                             title="Default">
+                                        
+                                        {# Then color variants #}
+                                        {% if product.colors|length > 0 %}
+                                            {% for color in product.colors|slice(0, 3) %}
+                                                <img loading="lazy" 
+                                                     src="{{ asset('uploads/products/' ~ color.imageOff) }}" 
+                                                     alt="{{ product.name }} - {{ color.colorName }}"
+                                                     title="{{ color.colorName }}">
+                                            {% endfor %}
+                                        {% endif %}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="product-info">
+                        <div class="name">
+                                <a href="{{ path('app_product_show', {'id': product.id}) }}">{{ product.name }}</a>
+                        </div>
+                        <div class="designer">
+                                <p>{{ product.category ? product.category.name : 'Unknown Designer' }}</p>
+                        </div>
+                        <div class="sku">
+                                <p>{{ product.sku }}</p>
+                        </div>
+                        <div class="price">
+                                <span class="price-final">{{ product.price|number_format(2, '.', ',') }}</span>
+                        </div>
+                        <div class="description">
+                            <p><a href="#">View Additional Finishes</a></p>
+                        </div>
+                    </div>
+                </li>
+                    {% endfor %}
+            </ol>
+            {% else %}
+                <div class="no-results">
+                    {% if search_query is defined and search_query is not empty %}
+                        <p>No products found matching "{{ search_query }}"</p>
+                    {% else %}
+                        <p>No products available</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-main">
+            <div class="footer-nav">
+                <div class="footer-menu">
+                    <a href="#">CONTACT</a>
+                    <a href="#">TECHNICAL</a>
+                    <a href="#">PROJECTS</a>
+                    <a href="#">NEWS</a>
+                    <a href="#">DEALERS</a>
+                    <a href="#">PORTFOLIO</a>
+                </div>
+                <div class="footer-contact">
+                    <div class="contact-info">
+                        <p>495 Railway St.</p>
+                        <p>Vancouver BC</p>
+                        <p>V6A 1A7</p>
+                        <p>+1 604 639 5195</p>
+                    </div>
+                    <div class="social-links">
+                        <a href="#">Facebook</a>
+                        <a href="#">Instagram</a>
+                        <a href="#">Twitter</a>
+                        <a href="#">Vimeo</a>
+                    </div>
+                </div>
+            </div>
+            <a href="#" class="newsletter-signup">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+                Sign Up for our Newsletter
+            </a>
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <p>© 2025 MIZA</p>
+                    <div class="legal-links">
+                        <a href="#">Privacy</a>
+                        <a href="#">Terms</a>
+                        <a href="#">Site Credits</a>
+                        <a href="#">Cookie Settings</a>
+                    </div>
+                </div>
+                <div class="footer-logo">
+                    <img src="{{ asset('assets/images/logo MIZA.png') }}" alt="MIZA Logo">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Menu Backdrop -->
+    <div class="menu-backdrop"></div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay">
+        <div class="menu-content">
+            <ul class="menu-categories">
+                {% for category in categories %}
+                    <li class="menu-category" style="--index: {{ loop.index0 }}">
+                        <a href="{{ path('app_products', {'category': category.id}) }}">{{ category.name|upper }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="menu-footer">
+                <ul class="menu-footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close Button for Menu -->
+    <button class="menu-close">×</button>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay">
+        <button class="search-close">&times;</button>
+        <div class="search-container">
+            <form action="{{ path('app_products') }}" method="get" id="searchForm">
+                <div class="search-input-wrapper">
+                    <input type="text" name="q" class="search-input" placeholder="Search products..." 
+                           autocomplete="off" value="{{ search_query|default('') }}">
+                    <button type="submit" class="search-button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="search-results"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('theme');
+        
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.classList.add('dark-mode');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeToggle.classList.toggle('dark-mode');
+            
+            localStorage.setItem('theme', 
+                document.body.classList.contains('dark-mode') ? 'dark' : 'light'
+            );
+        });
+
+        // Light switch functionality for product images only
+        const lightSwitch = document.querySelector('.light-switch-toggle');
+        let isLightOn = false;
+        
+        function toggleAllProductImages() {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                // Toggle main product image
+                if (card.querySelector('.product-image-photo.hover-image')) {
+                    const mainImage = card.querySelector('.product-image-photo:not(.hover-image)');
+                    const hoverImage = card.querySelector('.product-image-photo.hover-image');
+                    
+                    if (isLightOn) {
+                        mainImage.style.opacity = '1';
+                        hoverImage.style.opacity = '0';
+                    } else {
+                        mainImage.style.opacity = '0';
+                        hoverImage.style.opacity = '1';
+                    }
+                }
+
+                // Toggle color variant images
+                const variantImages = card.querySelectorAll('.variants img');
+                variantImages.forEach(img => {
+                    const currentSrc = img.src;
+                if (!isLightOn && currentSrc.includes('Off')) {
+                        img.src = currentSrc.replace('Off', 'On');
+                } else if (isLightOn && currentSrc.includes('On')) {
+                        img.src = currentSrc.replace('On', 'Off');
+                }
+            });
+            });
+            
+            isLightOn = !isLightOn;
+            
+            // Toggle light switch appearance
+            if (isLightOn) {
+                lightSwitch.classList.add('lights-on');
+            } else {
+                lightSwitch.classList.remove('lights-on');
+            }
+            
+            // Toggle switch icons
+            lightSwitch.querySelector('.switch-on').style.opacity = isLightOn ? '0' : '1';
+            lightSwitch.querySelector('.switch-off').style.opacity = isLightOn ? '1' : '0';
+        }
+        
+        // Add click event listener to light switch
+        lightSwitch.addEventListener('click', function() {
+            toggleAllProductImages();
+        });
+
+        // Menu toggle functionality
+        const menuToggle = document.querySelector('.menu-toggle');
+        const menuBackdrop = document.querySelector('.menu-backdrop');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const menuClose = document.querySelector('.menu-close');
+
+        menuToggle.addEventListener('click', () => {
+            menuBackdrop.classList.add('active');
+            menuOverlay.classList.add('active');
+            document.body.classList.add('menu-open');
+            if (menuClose) menuClose.classList.add('active');
+        });
+
+        menuBackdrop.addEventListener('click', () => {
+            menuBackdrop.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.classList.remove('menu-open');
+            if (menuClose) menuClose.classList.remove('active');
+        });
+
+        if (menuClose) {
+            menuClose.addEventListener('click', () => {
+                menuBackdrop.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.classList.remove('menu-open');
+                menuClose.classList.remove('active');
+            });
+        }
+
+        // Updated search functionality
+        const searchForm = document.getElementById('searchForm');
+        const searchToggle = document.querySelector('.search-toggle');
+        const searchOverlay = document.querySelector('.search-overlay');
+        const searchClose = document.querySelector('.search-close');
+        const searchInput = document.querySelector('.search-input');
+        const searchResults = document.querySelector('.search-results');
+        let searchTimeout;
+
+        searchToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            searchOverlay.classList.add('active');
+            setTimeout(() => searchInput.focus(), 100);
+        });
+
+        searchClose.addEventListener('click', () => {
+            searchOverlay.classList.remove('active');
+            searchInput.value = '';
+            searchResults.innerHTML = '';
+        });
+
+        // Handle form submission on enter and button click
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (query) {
+                searchForm.submit();
+            }
+        });
+
+        // Add click handler for search button
+        const searchButton = document.querySelector('.search-button');
+        searchButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (query) {
+                searchForm.submit();
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length < 2) {
+                searchResults.innerHTML = '';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetch(`/api/search?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let html = '';
+
+                        // Add suggestions if there are no results
+                        if (data.results.length === 0 && data.suggestions.length > 0) {
+                            html += '<div class="search-suggestions">';
+                            html += '<div class="search-suggestion">Did you mean:</div>';
+                            data.suggestions.forEach(suggestion => {
+                                html += `<div class="search-suggestion">
+                                    <a href="{{ path('app_products') }}?q=${encodeURIComponent(suggestion.name)}">
+                                        ${suggestion.name}
+                                    </a>
+                                </div>`;
+                            });
+                            html += '</div>';
+                        }
+
+                        // Add results with links to product pages
+                        if (data.results.length) {
+                            html += data.results.map(product => `
+                                <a href="{{ path('app_product_show', {'id': 'PRODUCT_ID'}) }}".replace('PRODUCT_ID', product.id) class="search-result-item">
+                                    <img src="${product.image}" alt="${product.name}" class="search-result-image">
+                                    <div class="search-result-info">
+                                        <div class="search-result-name">${product.name}</div>
+                                        <div class="search-result-category">${product.category || 'No Category'}</div>
+                                    </div>
+                                    <div class="search-result-price">$${parseFloat(product.price).toFixed(2)}</div>
+                                </a>
+                            `).join('');
+                        } else if (data.suggestions.length === 0) {
+                            html = '<div class="p-3">No products found</div>';
+                        }
+
+                        searchResults.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        searchResults.innerHTML = '<div class="p-3">Error performing search</div>';
+                    });
+            }, 300);
+        });
+
+        // Close search on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
+                searchOverlay.classList.remove('active');
+                searchInput.value = '';
+                searchResults.innerHTML = '';
+            }
+        });
+
+        // Add this to your existing script section
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtn = document.querySelector('.filter-btn');
+            const filterCategories = document.querySelector('.filter-categories');
+            
+            // Toggle filter menu
+            filterBtn.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+
+            // Close filter menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!filterBtn.contains(e.target) && !filterCategories.contains(e.target)) {
+                    filterBtn.classList.remove('active');
+                }
+            });
+
+            // Handle filter changes
+            const filterSelects = document.querySelectorAll('.filter-select');
+            const sortSelect = document.querySelector('.sort-select');
+
+            function updateFilters() {
+                const params = new URLSearchParams(window.location.search);
+                
+                filterSelects.forEach(select => {
+                    if (select.value) {
+                        params.set(select.name, select.value);
+                    } else {
+                        params.delete(select.name);
+                    }
+                });
+
+                if (sortSelect.value) {
+                    params.set('sort', sortSelect.value);
+                }
+
+                window.location.href = `${window.location.pathname}?${params.toString()}`;
+            }
+
+            filterSelects.forEach(select => {
+                select.addEventListener('change', updateFilters);
+            });
+
+            sortSelect.addEventListener('change', updateFilters);
+        });
+    </script>
+</body>
+</html> 

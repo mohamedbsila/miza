@@ -1,0 +1,186 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PayPal Integration Setup Instructions{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .instructions-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .instructions-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .instructions-section {
+        margin-bottom: 2rem;
+    }
+
+    .instructions-section h2 {
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+
+    .step {
+        margin-bottom: 1.5rem;
+        padding-left: 2rem;
+        position: relative;
+    }
+
+    .step:before {
+        content: attr(data-step);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 24px;
+        height: 24px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .code-block {
+        background: #f5f5f5;
+        padding: 1rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+        font-family: monospace;
+        white-space: pre-wrap;
+        overflow-x: auto;
+    }
+
+    .note {
+        background: #fff8e1;
+        padding: 1rem;
+        border-left: 4px solid #ffc107;
+        margin: 1rem 0;
+    }
+
+    img.screenshot {
+        max-width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin: 1rem 0;
+    }
+
+    /* Dark mode styles */
+    body.dark-mode .instructions-container {
+        background: #333;
+    }
+
+    body.dark-mode .instructions-header {
+        border-bottom-color: #444;
+    }
+
+    body.dark-mode .code-block {
+        background: #222;
+        color: #fff;
+    }
+
+    body.dark-mode .note {
+        background: #3a3200;
+        border-left-color: #ffc107;
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="instructions-container">
+    <div class="instructions-header">
+        <h1>Setting Up PayPal Integration</h1>
+        <p>Follow these step-by-step instructions to properly configure PayPal for your MIZA store.</p>
+    </div>
+
+    <div class="instructions-section">
+        <h2>1. Create a PayPal Developer Account</h2>
+        <div class="step" data-step="1">
+            <p>Go to the <a href="https://developer.paypal.com/dashboard/applications/sandbox" target="_blank">PayPal Developer Dashboard</a></p>
+        </div>
+        <div class="step" data-step="2">
+            <p>Sign up for a PayPal Developer account if you don't already have one (it's free)</p>
+        </div>
+    </div>
+
+    <div class="instructions-section">
+        <h2>2. Create a Sandbox Application</h2>
+        <div class="step" data-step="1">
+            <p>In the PayPal Developer Dashboard, click on "Apps & Credentials" in the left menu</p>
+        </div>
+        <div class="step" data-step="2">
+            <p>Click the "Create App" button under the "Sandbox" tab</p>
+        </div>
+        <div class="step" data-step="3">
+            <p>Fill out the form:</p>
+            <ul>
+                <li>App Name: "MIZA Store" (or your preferred name)</li>
+                <li>Sandbox Business Account: Select any available sandbox account</li>
+            </ul>
+        </div>
+        <div class="step" data-step="4">
+            <p>Click "Create App"</p>
+        </div>
+    </div>
+
+    <div class="instructions-section">
+        <h2>3. Get Your API Credentials</h2>
+        <div class="step" data-step="1">
+            <p>After creating your app, you'll be taken to the app details page</p>
+        </div>
+        <div class="step" data-step="2">
+            <p>Find the "Client ID" and "Secret" sections - these are your API credentials</p>
+        </div>
+        <div class="step" data-step="3">
+            <p>Copy the Client ID - it should be approximately 80 characters long, starting with "AY" or "Ab"</p>
+            <div class="note">
+                <p><strong>Important:</strong> A valid PayPal Client ID is approximately 80 characters long. If yours is shorter (like the current one: "{{ paypal_client_id }}"), it is invalid.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="instructions-section">
+        <h2>4. Update Your .env File</h2>
+        <div class="step" data-step="1">
+            <p>Open your project's .env file (or .env.local for local overrides)</p>
+        </div>
+        <div class="step" data-step="2">
+            <p>Update the PAYPAL_CLIENT_ID value with your new Client ID:</p>
+            <div class="code-block">PAYPAL_CLIENT_ID=YOUR_NEW_CLIENT_ID_HERE
+PAYPAL_CLIENT_SECRET=YOUR_SECRET_HERE</div>
+        </div>
+        <div class="step" data-step="3">
+            <p>Save the file and restart your Symfony server to reload the environment variables</p>
+        </div>
+    </div>
+
+    <div class="instructions-section">
+        <h2>5. Testing Your Integration</h2>
+        <div class="step" data-step="1">
+            <p>Use these PayPal Sandbox test accounts for testing:</p>
+            <div class="code-block">Sandbox Buyer Account:
+Email: sb-buyer@example.com
+Password: Find this in your PayPal Developer Dashboard</div>
+        </div>
+        <div class="step" data-step="2">
+            <p>Make sure to check your browser console for any error messages if issues persist</p>
+        </div>
+    </div>
+
+    <div class="note">
+        <p><strong>Remember:</strong> The PayPal integration is currently set up for Sandbox mode, which is for testing only. When you're ready to accept real payments, you'll need to create a live PayPal app and update your credentials.</p>
+    </div>
+</div>
+{% endblock %} 

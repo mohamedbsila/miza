@@ -1,0 +1,1351 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home Page Editor{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --secondary-color: #6c757d;
+            --light-bg: #f8f9fa;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .admin-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .section-editor {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+            padding: 30px;
+            transition: transform 0.2s ease;
+        }
+
+        .section-editor:hover {
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section-title h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #222;
+        }
+
+        .image-preview {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            transition: transform 0.3s ease;
+        }
+
+        .image-preview:hover {
+            transform: scale(1.02);
+        }
+
+        .image-upload-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 25px;
+            align-items: flex-start;
+        }
+
+        .product-grid-editor {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .product-item-editor {
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+            border-radius: 12px;
+            background: var(--light-bg);
+            transition: box-shadow 0.3s ease;
+            cursor: move;
+        }
+
+        .product-item-editor:hover {
+            box-shadow: var(--shadow);
+        }
+
+        .image-upload {
+            border: 2px dashed #d1d5db;
+            padding: 25px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            background: #fff;
+        }
+
+        .image-upload:hover {
+            border-color: var(--primary-color);
+            background: var(--light-bg);
+            transform: translateY(-2px);
+        }
+
+        .image-upload i {
+            font-size: 1.5rem;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .image-upload p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        .section-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        .fixed-save-container {
+            position: fixed;
+            top: 70px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fixed-save-container .btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+
+        .fixed-save-container .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .save-indicator {
+            display: none;
+            color: var(--success-color);
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .save-indicator.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .product-image-container {
+            position: relative;
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .image-hover-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-bg);
+        }
+
+        .product-preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+        }
+
+        .product-overlay h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+        }
+
+        .product-controls {
+            padding: 15px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            background: var(--light-bg);
+        }
+
+        .empty-slot {
+            background: var(--light-bg);
+            border: 2px dashed #d1d5db;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .empty-slot:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+            transform: translateY(-2px);
+        }
+
+        .empty-slot i {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .empty-slot p {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .add-product-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            z-index: 2000;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .add-product-modal h3 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            color: #333;
+        }
+
+        .add-product-modal .form-select {
+            margin-bottom: 15px;
+        }
+
+        .add-product-modal .btn {
+            margin-right: 10px;
+        }
+
+        .spotlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .spotlight-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+
+        .galleries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+
+        /* Dark mode adjustments */
+        body.dark-mode .section-editor,
+        body.dark-mode .product-item-editor,
+        body.dark-mode .spotlight-item,
+        body.dark-mode .gallery-item {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-color: #4a5568;
+        }
+
+        body.dark-mode .empty-slot {
+            background: #1a202c;
+            border-color: #4a5568;
+            color: #a0aec0;
+        }
+
+        body.dark-mode .product-controls {
+            background: #1a202c;
+        }
+
+        body.dark-mode .image-upload {
+            background: #2d3748;
+            border-color: #4a5568;
+        }
+
+        body.dark-mode .fixed-save-container {
+            background: rgba(45, 55, 72, 0.95);
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .add-product-modal {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .image-upload-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .product-grid-editor,
+            .galleries-grid,
+            .spotlight-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 576px) {
+            .fixed-save-container {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                justify-content: center;
+                padding: 8px 15px;
+            }
+
+            .section-editor {
+                padding: 20px;
+            }
+
+            .image-preview {
+                width: 100%;
+                height: auto;
+                max-height: 300px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Home Page Editor</h1>
+        </div>
+
+        <!-- Fixed Save Button Container -->
+        <div class="fixed-save-container">
+            <button class="btn btn-primary" id="saveAllChanges">
+                <i class="fas fa-save"></i> Save All Changes
+            </button>
+            <button class="btn btn-secondary" id="saveProductOrder" style="display: none;">
+                <i class="fas fa-sort"></i> Save Product Order
+            </button>
+            <div class="save-indicator">
+                <div class="loading-spinner"></div>
+                <span>Saving changes...</span>
+            </div>
+        </div>
+
+        <!-- Hero Section Editor -->
+        <div class="section-editor" data-section="hero">
+            <div class="section-title">
+                <h2>Hero Section</h2>
+            </div>
+            <div class="image-upload-container">
+                <div>
+                    <label class="form-label">Hero Image</label>
+                    <img src="{{ asset(content.hero.image ?? 'assets/images/light/on.jpg') }}"
+                         alt="Hero Section"
+                         class="image-preview"
+                         id="heroPreview">
+                    <div class="image-upload" data-target="heroPreview">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload new image</p>
+                        <input type="file" class="d-none" accept="image/*" name="heroImage">
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="mb-3">
+                        <label class="form-label">Hero Title</label>
+                        <input type="text" class="form-control" value="{{ content.hero.title }}" name="heroTitle">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Button Text</label>
+                        <input type="text" class="form-control" value="{{ content.hero.buttonText }}" name="heroButton">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Section Editor -->
+        <div class="section-editor" data-section="products">
+            <div class="section-title">
+                <h2>Featured Products</h2>
+                <div class="d-flex gap-2">
+                    <select class="form-select" id="productSelector">
+                        <option value="">Select a product to feature</option>
+                        {% for product in allProducts %}
+                            {% if not product.isFeatured %}
+                                <option value="{{ product.id }}">{{ product.name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-success" id="addSelectedProduct">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                </div>
+            </div>
+            <div class="product-grid-editor" id="productGridEditor">
+                {% for product in featuredProducts %}
+                    <div class="product-item-editor" data-product-id="{{ product.id }}" draggable="true">
+                        <div class="mb-3">
+                            <label class="form-label">Product Title</label>
+                            <input type="text" class="form-control" value="{{ product.name }}" name="productTitle" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Product Image</label>
+                            {% if product.images is not empty %}
+                                {% set mainImage = product.images|first %}
+                                <img src="{{ asset('uploads/products/' ~ mainImage.imageOn) }}"
+                                     alt="{{ product.name }}"
+                                     class="image-preview">
+                            {% else %}
+                                <img src="{{ asset('images/placeholder.jpg') }}"
+                                     alt="No Image"
+                                     class="image-preview">
+                            {% endif %}
+                        </div>
+                        <div class="section-controls">
+                            <button class="btn btn-danger btn-sm remove-product" data-product-id="{{ product.id }}">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                            <button class="btn btn-secondary btn-sm move-product">
+                                <i class="fas fa-arrows-alt"></i> Move
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Icons Section Editor -->
+        <div class="section-editor" data-section="icons">
+            <div class="section-title">
+                <h2>Icons Section</h2>
+            </div>
+            <div class="image-upload-container">
+                <div>
+                    <label class="form-label">Section Image</label>
+                    <img src="{{ asset(content.icons.image ?? 'assets/images/light/on.jpg') }}"
+                         alt="Icons Section"
+                         class="image-preview"
+                         id="iconsPreview">
+                    <div class="image-upload" data-target="iconsPreview">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload new image</p>
+                        <input type="file" class="d-none" accept="image/*" name="iconsImage">
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="mb-3">
+                        <label class="form-label">Section Title</label>
+                        <input type="text" class="form-control" value="{{ content.icons.title }}" name="iconsTitle">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Section Description</label>
+                        <textarea class="form-control" rows="3" name="iconsDescription">{{ content.icons.description }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Button Text</label>
+                        <input type="text" class="form-control" value="{{ content.icons.buttonText }}" name="iconsButton">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cordless Section Editor -->
+        <div class="section-editor" data-section="cordless">
+            <div class="section-title">
+                <h2>Cordless Section</h2>
+            </div>
+            <div class="image-upload-container">
+                <div>
+                    <label class="form-label">Section Image</label>
+                    <img src="{{ asset(content.cordless.image ?? 'assets/images/light/on.jpg') }}"
+                         alt="Cordless Section"
+                         class="image-preview"
+                         id="cordlessPreview">
+                    <div class="image-upload" data-target="cordlessPreview">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload new image</p>
+                        <input type="file" class="d-none" accept="image/*" name="cordlessImage">
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="mb-3">
+                        <label class="form-label">Section Title</label>
+                        <input type="text" class="form-control" value="{{ content.cordless.title }}" name="cordlessTitle">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Section Description</label>
+                        <textarea class="form-control" rows="3" name="cordlessDescription">{{ content.cordless.description }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Button Text</label>
+                        <input type="text" class="form-control" value="{{ content.cordless.buttonText }}" name="cordlessButton">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shop Section Editor -->
+        <div class="section-editor" data-section="shop">
+            <div class="section-title">
+                <h2>Shop Section</h2>
+            </div>
+            <div class="image-upload-container">
+                <div>
+                    <label class="form-label">Section Image</label>
+                    <div class="current-image mb-3">
+                        <small class="text-muted">Current Image:</small>
+                        <img src="{{ asset(content.shop.image ?? 'assets/images/light/on.jpg') }}"
+                             alt="Shop Section"
+                             class="image-preview"
+                             id="shopPreview">
+                    </div>
+                    <div class="image-upload" data-target="shopPreview">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload new image</p>
+                        <input type="file" class="d-none" accept="image/*" name="shopImage">
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="mb-3">
+                        <label class="form-label">Section Title</label>
+                        <input type="text" class="form-control" value="{{ content.shop.title }}" name="shopTitle">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Section Description</label>
+                        <textarea class="form-control" rows="3" name="shopDescription">{{ content.shop.description }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Button Text</label>
+                        <input type="text" class="form-control" value="{{ content.shop.buttonText }}" name="shopButton">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore Products Section -->
+        <div class="section-editor" id="exploreSection">
+            <div class="section-title">
+                <h2>Explore Products Section</h2>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="exploreTitle">Section Title</label>
+                <input type="text" class="form-control" id="exploreTitle" name="explore[title]" value="{{ content.explore.title ?? 'Explore Our Products' }}">
+            </div>
+
+            <div class="product-grid">
+                {% for product in exploreProducts %}
+                    <div class="product-item" style="position: relative; overflow: hidden; border-radius: 8px; transition: transform 0.3s ease; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center;">
+                        {% if product.images is not empty %}
+                            {% set mainImage = product.images|first %}
+                            <div class="product-link" style="position: relative; display: block; width: 100%; height: 100%;">
+                                <img src="{{ asset('uploads/products/' ~ mainImage.imageOn) }}"
+                                     data-image-off="{{ asset('uploads/products/' ~ mainImage.imageOff) }}"
+                                     alt="{{ product.name }}"
+                                     class="product-image"
+                                     onmouseover="this.src = this.getAttribute('data-image-off')"
+                                     onmouseout="this.src = '{{ asset('uploads/products/' ~ mainImage.imageOn) }}'"
+                                     style="width: 100%; height: 100%; transition: all 0.3s ease; object-fit: cover;">
+                                <h3 style="position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; color: #fff; margin: 0; padding: 10px; background: rgba(0, 0, 0, 0.6);">{{ product.name }}</h3>
+                            </div>
+                        {% endif %}
+                        <button class="btn btn-danger remove-explore-product" data-product-id="{{ product.id }}" style="position: absolute; top: 10px; right: 10px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+
+                {% if exploreProducts|length < 6 %}
+                    <div class="empty-slot" data-action="add-explore-product">
+                        <div class="text-center">
+                            <i class="fas fa-plus"></i>
+                            <p>Add Product</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group mt-4">
+                <label for="exploreButtonText">Button Text</label>
+                <input type="text" class="form-control" id="exploreButtonText" name="explore[buttonText]" value="{{ content.explore.buttonText ?? 'EXPLORE MORE' }}">
+            </div>
+
+            <!-- Hidden Product Selector Modal -->
+            <div class="add-product-modal" id="addExploreModal">
+                <h3>Add a Product</h3>
+                <select class="form-select" id="exploreProductSelector">
+                    <option value="">Select a product</option>
+                    {% for product in allProducts %}
+                        {% if not product.isExploreProduct %}
+                            <option value="{{ product.id }}">{{ product.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <div class="mt-3">
+                    <button class="btn btn-success" id="addExploreProduct">Add</button>
+                    <button class="btn btn-secondary" id="cancelAddExplore">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inspiration Galleries Section -->
+        <div class="section-editor" id="galleriesSection" data-section="galleries">
+            <div class="section-title">
+                <h2>Inspiration Galleries</h2>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="galleriesTitle">Main Title</label>
+                <input type="text" class="form-control" id="galleriesTitle" name="galleries[title]" value="Inspiration Galleries">
+            </div>
+
+            <div class="galleries-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; padding: 2rem;">
+                {% for gallery in galleries %}
+                    <div class="gallery-item" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); padding: 1.5rem;">
+                        <div class="current-image mb-3">
+                            <img src="{{ asset(gallery.imageUrl ?? 'assets/images/light/on.jpg') }}"
+                                 alt="{{ gallery.name }}"
+                                 class="image-preview"
+                                 id="{{ gallery.roomType }}Preview"
+                                 style="width: 100%; height: 220px; object-fit: cover; border-radius: 8px;">
+                        </div>
+
+                        <div class="image-upload mb-3" data-target="{{ gallery.roomType }}Preview" data-gallery-type="{{ gallery.roomType }}">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload new image</p>
+                            <input type="file" class="d-none" accept="image/*" name="galleries[{{ gallery.roomType }}][image]">
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>Gallery Title</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="galleries[{{ gallery.roomType }}][title]"
+                                   value="{{ gallery.name ?? (gallery.roomType|capitalize ~ ' Gallery') }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Button Text</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="galleries[{{ gallery.roomType }}][buttonText]"
+                                   value="{{ gallery.description ?? 'VIEW MORE' }}">
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Spotlight Section Editor -->
+        <div class="section-editor" data-section="spotlight">
+            <div class="section-title">
+                <h2>Spotlight Section</h2>
+            </div>
+            <div class="spotlight-grid">
+                {% for article in spotlightArticles %}
+                    <div class="spotlight-item">
+                        <div class="current-image mb-3">
+                            <img src="{{ asset(article.imageUrl ?? 'assets/images/light/on.jpg') }}"
+                                 alt="{{ article.title }}"
+                                 class="image-preview"
+                                 id="spotlight{{ article.id }}Preview">
+                        </div>
+                        <div class="image-upload mb-3" data-target="spotlight{{ article.id }}Preview" data-article-id="{{ article.id }}">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload new image</p>
+                            <input type="file" class="d-none" accept="image/*" name="spotlight[{{ article.id }}][image]">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Article Title</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="spotlight[{{ article.id }}][title]"
+                                   value="{{ article.title }}">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Content</label>
+                            <textarea class="form-control" rows="3" name="spotlight[{{ article.id }}][content]">{{ article.content }}</textarea>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Publish Date</label>
+                            <input type="date"
+                                   class="form-control"
+                                   name="spotlight[{{ article.id }}][publishDate]"
+                                   value="{{ article.publishDate ? article.publishDate|date('Y-m-d') : '' }}">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Featured</label>
+                            <input type="checkbox"
+                                   name="spotlight[{{ article.id }}][isFeatured]"
+                                   {% if article.isFeatured %}checked{% endif %}>
+                        </div>
+                        <div class="section-controls">
+                            <button class="btn btn-danger btn-sm remove-spotlight" data-article-id="{{ article.id }}">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="empty-slot" data-action="add-spotlight-article">
+                    <div class="text-center">
+                        <i class="fas fa-plus"></i>
+                        <p>Add Article</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Hidden Article Selector Modal -->
+            <div class="add-product-modal" id="addSpotlightModal">
+                <h3>Add a Spotlight Article</h3>
+                <div class="mb-3">
+                    <label class="form-label">Article Title</label>
+                    <input type="text" class="form-control" id="newSpotlightTitle" name="newSpotlightTitle">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Content</label>
+                    <textarea class="form-control" rows="3" id="newSpotlightContent" name="newSpotlightContent"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Publish Date</label>
+                    <input type="date" class="form-control" id="newSpotlightPublishDate" name="newSpotlightPublishDate">
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-success" id="addSpotlightArticle">Add</button>
+                    <button class="btn btn-secondary" id="cancelAddSpotlight">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Helper function to show alerts
+            function showAlert(message, isSuccess = true) {
+                alert(message);
+                console.log(`${isSuccess ? 'Success' : 'Error'}: ${message}`);
+            }
+
+            // Helper function to toggle save indicator
+            function toggleSaveIndicator(show) {
+                const saveIndicator = document.querySelector('.save-indicator');
+                saveIndicator.classList.toggle('show', show);
+            }
+
+            // Image upload preview and feedback
+            document.querySelectorAll('.image-upload').forEach(upload => {
+                const input = upload.querySelector('input[type="file"]');
+                const previewId = upload.dataset.target;
+                const preview = document.getElementById(previewId);
+                const section = upload.closest('.section-editor').dataset.section;
+                const galleryType = upload.dataset.galleryType;
+                const articleId = upload.dataset.articleId;
+
+                upload.addEventListener('click', () => input.click());
+
+                input.addEventListener('change', async (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        const file = e.target.files[0];
+                        const reader = new FileReader();
+                        reader.onload = (e) => preview.src = e.target.result;
+                        reader.readAsDataURL(file);
+
+                        const formData = new FormData();
+                        formData.append('image', file);
+                        formData.append('section', section || 'home');
+                        if (galleryType) formData.append('galleryType', galleryType);
+                        if (articleId) formData.append('articleId', articleId);
+
+                        toggleSaveIndicator(true);
+                        try {
+                            const response = await fetch('/admin/home-editor/upload', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const result = await response.json();
+                            if (result.success) {
+                                preview.src = result.path;
+                                showAlert('Image uploaded successfully!');
+                                if (galleryType) {
+                                    window.location.reload(); // Reload to refresh gallery data
+                                }
+                            } else {
+                                showAlert('Failed to upload image: ' + result.message, false);
+                            }
+                        } catch (error) {
+                            showAlert('Failed to upload image. Please try again.', false);
+                        } finally {
+                            toggleSaveIndicator(false);
+                        }
+                    }
+                });
+            });
+
+            // Save all changes
+            document.getElementById('saveAllChanges').addEventListener('click', async () => {
+                toggleSaveIndicator(true);
+
+                const data = {
+                    hero: {
+                        title: document.querySelector('[name="heroTitle"]').value,
+                        buttonText: document.querySelector('[name="heroButton"]').value
+                    },
+                    icons: {
+                        title: document.querySelector('[name="iconsTitle"]').value,
+                        description: document.querySelector('[name="iconsDescription"]').value,
+                        buttonText: document.querySelector('[name="iconsButton"]').value
+                    },
+                    cordless: {
+                        title: document.querySelector('[name="cordlessTitle"]').value,
+                        description: document.querySelector('[name="cordlessDescription"]').value,
+                        buttonText: document.querySelector('[name="cordlessButton"]').value
+                    },
+                    spotlight: { items: [] },
+                    shop: {
+                        title: document.querySelector('[name="shopTitle"]').value,
+                        description: document.querySelector('[name="shopDescription"]').value,
+                        buttonText: document.querySelector('[name="shopButton"]').value
+                    },
+                    explore: {
+                        title: document.querySelector('[name="explore[title]"]').value,
+                        buttonText: document.querySelector('[name="explore[buttonText]"]').value
+                    },
+                    products: Array.from(document.querySelectorAll('.product-item-editor')).map((item, index) => ({
+                        id: item.dataset.productId,
+                        position: index
+                    })),
+                    galleries: {
+                        title: document.querySelector('[name="galleries[title]"]').value,
+                        items: {}
+                    }
+                };
+
+                // Collect spotlight articles data
+                document.querySelectorAll('.spotlight-item').forEach(item => {
+                    const articleId = item.querySelector('.image-upload').dataset.articleId;
+                    const titleInput = item.querySelector(`input[name="spotlight[${articleId}][title]"]`);
+                    const contentInput = item.querySelector(`textarea[name="spotlight[${articleId}][content]"]`);
+                    const publishDateInput = item.querySelector(`input[name="spotlight[${articleId}][publishDate]"]`);
+                    const isFeaturedInput = item.querySelector(`input[name="spotlight[${articleId}][isFeatured]"]`);
+                    if (titleInput && contentInput) {
+                        data.spotlight.items.push({
+                            id: articleId,
+                            title: titleInput.value,
+                            content: contentInput.value,
+                            publishDate: publishDateInput ? publishDateInput.value : null,
+                            isFeatured: isFeaturedInput ? isFeaturedInput.checked : false
+                        });
+                    }
+                });
+
+                // Collect galleries data
+                document.querySelectorAll('.gallery-item').forEach(item => {
+                    const galleryType = item.querySelector('.image-preview').id.replace('Preview', '');
+                    const titleInput = item.querySelector(`input[name="galleries[${galleryType}][title]"]`);
+                    const buttonTextInput = item.querySelector(`input[name="galleries[${galleryType}][buttonText]"]`);
+                    if (titleInput && buttonTextInput) {
+                        data.galleries.items[galleryType] = {
+                            title: titleInput.value,
+                            buttonText: buttonTextInput.value
+                        };
+                    }
+                });
+
+                try {
+                    const response = await fetch('{{ path('admin_home_editor_save') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token('home_editor') }}'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        showAlert(result.message || 'Changes saved successfully!');
+                    } else {
+                        showAlert('Failed to save changes: ' + (result.message || 'Unknown error'), false);
+                    }
+                } catch (error) {
+                    showAlert('Failed to save changes. Please try again.', false);
+                } finally {
+                    toggleSaveIndicator(false);
+                }
+            });
+
+            // Add selected product (Featured Products)
+            document.getElementById('addSelectedProduct').addEventListener('click', async () => {
+                const select = document.getElementById('productSelector');
+                const productId = select.value;
+
+                if (!productId) {
+                    showAlert('Please select a product first', false);
+                    return;
+                }
+
+                toggleSaveIndicator(true);
+                try {
+                    const response = await fetch(`{{ path('admin_product_toggle_featured', {'id': 'PRODUCT_ID'}) }}`.replace('PRODUCT_ID', productId), {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token('featured_toggle') }}'
+                        }
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        showAlert('Product added successfully!');
+                        window.location.reload();
+                    } else {
+                        showAlert('Failed to add product: ' + (result.message || 'Unknown error'), false);
+                    }
+                } catch (error) {
+                    showAlert('Failed to add product. Please try again.', false);
+                } finally {
+                    toggleSaveIndicator(false);
+                }
+            });
+
+            // Remove product from featured
+            document.querySelectorAll('.remove-product').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    if (!confirm('Are you sure you want to remove this product from featured?')) return;
+
+                    const productId = button.dataset.productId;
+                    toggleSaveIndicator(true);
+                    try {
+                        const response = await fetch(`{{ path('admin_product_toggle_featured', {'id': 'PRODUCT_ID'}) }}`.replace('PRODUCT_ID', productId), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token('featured_toggle') }}'
+                            }
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            showAlert('Product removed successfully!');
+                            button.closest('.product-item-editor').remove();
+                            window.location.reload();
+                        } else {
+                            showAlert('Failed to remove product: ' + (result.message || 'Unknown error'), false);
+                        }
+                    } catch (error) {
+                        showAlert('Failed to remove product. Please try again.', false);
+                    } finally {
+                        toggleSaveIndicator(false);
+                    }
+                });
+            });
+
+            // Save product order
+            document.getElementById('saveProductOrder').addEventListener('click', async () => {
+                const order = Array.from(document.querySelectorAll('.product-item-editor')).map((item, index) => ({
+                    id: item.dataset.productId,
+                    position: index
+                }));
+
+                toggleSaveIndicator(true);
+                try {
+                    const response = await fetch('/admin/product/update-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token('product_order') }}'
+                        },
+                        body: JSON.stringify({ order })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        showAlert('Product order saved successfully!');
+                        document.getElementById('saveProductOrder').style.display = 'none';
+                    } else {
+                        showAlert('Failed to save product order: ' + (result.message || 'Unknown error'), false);
+                    }
+                } catch (error) {
+                    showAlert('Failed to save product order. Please try again.', false);
+                } finally {
+                    toggleSaveIndicator(false);
+                }
+            });
+
+            // Add explore product
+            document.getElementById('addExploreProduct')?.addEventListener('click', async () => {
+                const select = document.getElementById('exploreProductSelector');
+                const productId = select?.value;
+                const modal = document.querySelector('#addExploreModal');
+
+                if (!productId) {
+                    showAlert('Please select a product first', false);
+                    return;
+                }
+
+                toggleSaveIndicator(true);
+                try {
+                    const response = await fetch(`{{ path('admin_product_toggle_explore', {'id': 'PRODUCT_ID'}) }}`.replace('PRODUCT_ID', productId), {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token('explore_toggle') }}'
+                        }
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        showAlert('Product added to explore section successfully!');
+                        modal.style.display = 'none';
+                        window.location.reload();
+                    } else {
+                        showAlert('Failed to add product: ' + (result.message || 'Unknown error'), false);
+                    }
+                } catch (error) {
+                    showAlert('Failed to add product. Please try again.', false);
+                } finally {
+                    toggleSaveIndicator(false);
+                }
+            });
+
+            // Remove explore product
+            document.querySelectorAll('.remove-explore-product').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    if (!confirm('Are you sure you want to remove this product from the explore section?')) return;
+
+                    const productId = button.dataset.productId;
+                    toggleSaveIndicator(true);
+                    try {
+                        const response = await fetch(`{{ path('admin_product_toggle_explore', {'id': 'PRODUCT_ID'}) }}`.replace('PRODUCT_ID', productId), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token('explore_toggle') }}'
+                            }
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            showAlert('Product removed from explore section successfully!');
+                            button.closest('.product-item').remove();
+                            window.location.reload();
+                        } else {
+                            showAlert('Failed to remove product: ' + (result.message || 'Unknown error'), false);
+                        }
+                    } catch (error) {
+                        showAlert('Failed to remove product. Please try again.', false);
+                    } finally {
+                        toggleSaveIndicator(false);
+                    }
+                });
+            });
+
+            // Add spotlight article
+            document.getElementById('addSpotlightArticle')?.addEventListener('click', async () => {
+                const titleInput = document.getElementById('newSpotlightTitle');
+                const contentInput = document.getElementById('newSpotlightContent');
+                const publishDateInput = document.getElementById('newSpotlightPublishDate');
+                const modal = document.querySelector('#addSpotlightModal');
+
+                if (!titleInput.value || !contentInput.value) {
+                    showAlert('Please fill in the title and content fields', false);
+                    return;
+                }
+
+                const newArticle = {
+                    title: titleInput.value,
+                    content: contentInput.value,
+                    publishDate: publishDateInput.value || null,
+                    isFeatured: false
+                };
+
+                toggleSaveIndicator(true);
+                try {
+                    const response = await fetch('{{ path('admin_home_editor_save') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token('home_editor') }}'
+                        },
+                        body: JSON.stringify({
+                            spotlight: { items: [newArticle] }
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        showAlert('Spotlight article added successfully!');
+                        modal.style.display = 'none';
+                        window.location.reload();
+                    } else {
+                        showAlert('Failed to add article: ' + (result.message || 'Unknown error'), false);
+                    }
+                } catch (error) {
+                    showAlert('Failed to add article. Please try again.', false);
+                } finally {
+                    toggleSaveIndicator(false);
+                }
+            });
+
+            // Remove spotlight article
+            document.querySelectorAll('.remove-spotlight').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    if (!confirm('Are you sure you want to remove this article?')) return;
+
+                    const articleId = button.dataset.articleId;
+                    toggleSaveIndicator(true);
+                    try {
+                        const response = await fetch('{{ path('admin_home_editor_save') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token('home_editor') }}'
+                            },
+                            body: JSON.stringify({
+                                spotlight: { items: [{ id: articleId, _delete: true }] }
+                            })
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            showAlert('Spotlight article removed successfully!');
+                            button.closest('.spotlight-item').remove();
+                            window.location.reload();
+                        } else {
+                            showAlert('Failed to remove article: ' + (result.message || 'Unknown error'), false);
+                        }
+                    } catch (error) {
+                        showAlert('Failed to remove article. Please try again.', false);
+                    } finally {
+                        toggleSaveIndicator(false);
+                    }
+                });
+            });
+
+            // Draggable logic for Featured Products
+            const productGrid = document.getElementById('productGridEditor');
+            const saveProductOrderButton = document.getElementById('saveProductOrder');
+            let draggedItem = null;
+            let isDragging = false;
+
+            if (productGrid) {
+                productGrid.addEventListener('dragstart', (e) => {
+                    draggedItem = e.target.closest('.product-item-editor');
+                    if (draggedItem) {
+                        draggedItem.style.opacity = '0.5';
+                        isDragging = true;
+                        saveProductOrderButton.style.display = 'inline-flex';
+                    }
+                });
+
+                productGrid.addEventListener('dragend', () => {
+                    if (draggedItem) {
+                        draggedItem.style.opacity = '1';
+                        draggedItem = null;
+                        isDragging = false;
+                        if (!productGrid.querySelectorAll('.product-item-editor').some(item => item.style.opacity === '0.5')) {
+                            saveProductOrderButton.style.display = 'none';
+                        }
+                    }
+                });
+
+                productGrid.addEventListener('dragover', (e) => e.preventDefault());
+
+                productGrid.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (draggedItem && isDragging) {
+                        const closest = e.target.closest('.product-item-editor');
+                        if (closest && closest !== draggedItem) {
+                            const rect = closest.getBoundingClientRect();
+                            const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+                            productGrid.insertBefore(draggedItem, next ? closest.nextSibling : closest);
+                        }
+                    }
+                });
+            }
+
+            // Image hover effect
+            document.querySelectorAll('.product-image[data-image-off]').forEach(img => {
+                const originalSrc = img.src;
+                const hoverSrc = img.dataset.imageOff;
+
+                img.addEventListener('mouseenter', () => img.src = hoverSrc);
+                img.addEventListener('mouseleave', () => img.src = originalSrc);
+            });
+
+            // Empty slot click handler (Explore Products)
+            document.querySelectorAll('.empty-slot[data-action="add-explore-product"]').forEach(slot => {
+                slot.addEventListener('click', () => {
+                    document.querySelector('#addExploreModal').style.display = 'block';
+                });
+            });
+
+            // Cancel Add Product
+            document.getElementById('cancelAddExplore')?.addEventListener('click', () => {
+                document.querySelector('#addExploreModal').style.display = 'none';
+            });
+
+            // Empty slot click handler (Spotlight Articles)
+            document.querySelectorAll('.empty-slot[data-action="add-spotlight-article"]').forEach(slot => {
+                slot.addEventListener('click', () => {
+                    document.querySelector('#addSpotlightModal').style.display = 'block';
+                });
+            });
+
+            // Cancel Add Spotlight Article
+            document.getElementById('cancelAddSpotlight')?.addEventListener('click', () => {
+                document.querySelector('#addSpotlightModal').style.display = 'none';
+            });
+
+            // Make explore products sortable
+            const exploreGrid = document.querySelector('.product-grid');
+            if (exploreGrid) {
+                let draggedItem = null;
+
+                exploreGrid.addEventListener('dragstart', (e) => {
+                    draggedItem = e.target.closest('.product-item');
+                    if (draggedItem) draggedItem.style.opacity = '0.5';
+                });
+
+                exploreGrid.addEventListener('dragend', () => {
+                    if (draggedItem) {
+                        draggedItem.style.opacity = '1';
+                        draggedItem = null;
+                    }
+                });
+
+                exploreGrid.addEventListener('dragover', (e) => e.preventDefault());
+
+                exploreGrid.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (draggedItem) {
+                        const closest = e.target.closest('.product-item');
+                        if (closest && closest !== draggedItem) {
+                            const rect = closest.getBoundingClientRect();
+                            const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+                            exploreGrid.insertBefore(draggedItem, next ? closest.nextSibling : closest);
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
