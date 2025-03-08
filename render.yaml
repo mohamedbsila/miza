@@ -1,14 +1,18 @@
 services:
   - type: web
     name: miza
-    env: php
+    runtime: php
+    plan: free
+    region: frankfurt
     buildCommand: composer install --no-dev --optimize-autoloader
     startCommand: heroku-php-apache2 public/
     envVars:
       - key: APP_ENV
         value: prod
       - key: PHP_VERSION
-        value: 8.1
+        value: "8.1"
+      - key: COMPOSER_VERSION
+        value: "2"
     healthCheckPath: /
     autoDeploy: false
     disk:
