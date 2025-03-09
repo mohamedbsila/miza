@@ -1,0 +1,37 @@
+{
+  "name": "MIZA E-commerce Platform",
+  "description": "A Symfony-based e-commerce platform",
+  "repository": "https://github.com/mohamedbsila/miza",
+  "logo": "https://scalingo.com/logo.svg",
+  "env": {
+    "APP_ENV": {
+      "description": "Application environment",
+      "value": "prod"
+    },
+    "APP_DEBUG": {
+      "description": "Enable debug mode",
+      "value": "0"
+    },
+    "APP_SECRET": {
+      "description": "Application secret for security",
+      "generator": "secret"
+    }
+  },
+  "addons": [
+    {
+      "plan": "mysql:mysql-sandbox",
+      "options": {
+        "version": "8"
+      }
+    }
+  ],
+  "scripts": {
+    "first-deploy": "php bin/console doctrine:migrations:migrate --no-interaction"
+  },
+  "formation": {
+    "web": {
+      "amount": 1,
+      "size": "S"
+    }
+  }
+} 
