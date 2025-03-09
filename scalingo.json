@@ -26,7 +26,7 @@
     }
   ],
   "scripts": {
-    "first-deploy": "php bin/console doctrine:migrations:migrate --no-interaction"
+    "postdeploy": "bash scalingo_postdeploy.sh"
   },
   "formation": {
     "web": {
