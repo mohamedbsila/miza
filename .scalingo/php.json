@@ -1,0 +1,5 @@
+{
+    "php_version": "8.1",
+    "document_root": "public/",
+    "composer_options": ["--no-dev", "--optimize-autoloader"]
+} 

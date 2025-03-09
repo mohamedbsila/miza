@@ -4,7 +4,10 @@ namespace App\Doctrine;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Connection as DriverConnection;
+use Doctrine\DBAL\Driver\Result;
+use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\ParameterType;
 
 /**
  * A wrapper for Doctrine connections that gracefully handles connection errors
@@ -54,16 +57,51 @@ class ConnectionWrapper extends Connection
                 $this->connectionErrorLogged = true;
             }
             
-            // Create a dummy connection that does nothing
+            // Create a dummy connection that properly implements the DriverConnection interface
             return new class implements DriverConnection {
-                public function prepare($sql): \Doctrine\DBAL\Driver\Statement { return null; }
-                public function query(string $sql): \Doctrine\DBAL\Driver\Result { return null; }
-                public function quote($value, $type = \PDO::PARAM_STR) { return "''"; }
+                public function prepare(string $sql): Statement 
+                { 
+                    return new class implements Statement {
+                        public function bindValue($param, $value, $type = ParameterType::STRING): void {}
+                        public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null): void {}
+                        public function execute($params = null): Result
+                        {
+                            return new class implements Result {
+                                public function fetchNumeric() { return false; }
+                                public function fetchAssociative() { return false; }
+                                public function fetchOne() { return false; }
+                                public function fetchAllNumeric(): array { return []; }
+                                public function fetchAllAssociative(): array { return []; }
+                                public function fetchFirstColumn(): array { return []; }
+                                public function rowCount(): int { return 0; }
+                                public function columnCount(): int { return 0; }
+                                public function free(): void {}
+                            };
+                        }
+                    };
+                }
+                
+                public function query(string $sql): Result 
+                { 
+                    return new class implements Result {
+                        public function fetchNumeric() { return false; }
+                        public function fetchAssociative() { return false; }
+                        public function fetchOne() { return false; }
+                        public function fetchAllNumeric(): array { return []; }
+                        public function fetchAllAssociative(): array { return []; }
+                        public function fetchFirstColumn(): array { return []; }
+                        public function rowCount(): int { return 0; }
+                        public function columnCount(): int { return 0; }
+                        public function free(): void {}
+                    };
+                }
+                
+                public function quote($value, $type = ParameterType::STRING): string { return "''"; }
                 public function exec(string $sql): int { return 0; }
-                public function lastInsertId($name = null) { return 0; }
-                public function beginTransaction() { return true; }
-                public function commit() { return true; }
-                public function rollBack() { return true; }
+                public function lastInsertId($name = null): string { return "0"; }
+                public function beginTransaction(): bool { return true; }
+                public function commit(): bool { return true; }
+                public function rollBack(): bool { return true; }
             };
         }
     }
