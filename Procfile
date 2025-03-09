@@ -1,1 +1,1 @@
-web: cp public/standalone.php public/index.php && vendor/bin/heroku-php-apache2 public/ 
+web: vendor/bin/heroku-php-apache2 public/ 
