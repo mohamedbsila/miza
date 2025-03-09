@@ -65,8 +65,7 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
-            "@auto-scripts",
-            "php -r \"echo 'Skipping migrations during initial deployment...\n';\""
+            "@auto-scripts"
         ],
         "post-update-cmd": [
             "@auto-scripts"
