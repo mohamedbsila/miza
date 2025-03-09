@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Set environment to build during the build process
+export APP_ENV=build
+
+# Install dependencies
+composer install --no-dev --optimize-autoloader
+
+# Clear cache for production
+APP_ENV=prod php bin/console cache:clear --no-warmup
+
+echo "Build completed successfully!" 

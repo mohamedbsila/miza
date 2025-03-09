@@ -1,0 +1,15 @@
+parameters:
+    env(DATABASE_URL): 'sqlite:///:memory:'
+
+framework:
+    cache:
+        app: cache.adapter.array
+        system: cache.adapter.array
+
+doctrine:
+    dbal:
+        connections:
+            default:
+                url: 'sqlite:///:memory:'
+                schema_filter: ~^(?!.*)~
+                profiling_collect_backtrace: false 

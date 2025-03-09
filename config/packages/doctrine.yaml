@@ -20,4 +20,12 @@ doctrine:
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
-                alias: App 
+                alias: App
+
+# Disable Doctrine during build if DATABASE_URL is not set
+when@build:
+    doctrine:
+        orm:
+            auto_generate_proxy_classes: false
+            auto_mapping: false
+            mappings: [] 

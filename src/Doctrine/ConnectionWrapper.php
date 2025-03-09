@@ -57,52 +57,9 @@ class ConnectionWrapper extends Connection
                 $this->connectionErrorLogged = true;
             }
             
-            // Create a dummy connection that properly implements the DriverConnection interface
-            return new class implements DriverConnection {
-                public function prepare(string $sql): Statement 
-                { 
-                    return new class implements Statement {
-                        public function bindValue($param, $value, $type = ParameterType::STRING): void {}
-                        public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null): void {}
-                        public function execute($params = null): Result
-                        {
-                            return new class implements Result {
-                                public function fetchNumeric() { return false; }
-                                public function fetchAssociative() { return false; }
-                                public function fetchOne() { return false; }
-                                public function fetchAllNumeric(): array { return []; }
-                                public function fetchAllAssociative(): array { return []; }
-                                public function fetchFirstColumn(): array { return []; }
-                                public function rowCount(): int { return 0; }
-                                public function columnCount(): int { return 0; }
-                                public function free(): void {}
-                            };
-                        }
-                    };
-                }
-                
-                public function query(string $sql): Result 
-                { 
-                    return new class implements Result {
-                        public function fetchNumeric() { return false; }
-                        public function fetchAssociative() { return false; }
-                        public function fetchOne() { return false; }
-                        public function fetchAllNumeric(): array { return []; }
-                        public function fetchAllAssociative(): array { return []; }
-                        public function fetchFirstColumn(): array { return []; }
-                        public function rowCount(): int { return 0; }
-                        public function columnCount(): int { return 0; }
-                        public function free(): void {}
-                    };
-                }
-                
-                public function quote($value, $type = ParameterType::STRING): string { return "''"; }
-                public function exec(string $sql): int { return 0; }
-                public function lastInsertId($name = null): string { return "0"; }
-                public function beginTransaction(): bool { return true; }
-                public function commit(): bool { return true; }
-                public function rollBack(): bool { return true; }
-            };
+            // During build, we'll use a memory SQLite connection
+            // This should be handled by the when@build configuration
+            throw $e;
         }
     }
 } 
