@@ -43,4 +43,16 @@ Options -Indexes
 <FilesMatch ".(git|env|env.local|env.*.local|config|cache|log|vendor)">
     Order allow,deny
     Deny from all
-</FilesMatch> 
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule> 

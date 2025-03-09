@@ -1,1 +1,1 @@
-web: vendor/bin/heroku-php-apache2 -C apache.conf public/ 
+web: cp public/index_fallback.php public/index.php && vendor/bin/heroku-php-apache2 -C apache.conf public/ 
