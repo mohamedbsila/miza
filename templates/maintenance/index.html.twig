@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .maintenance-container {
+        max-width: 800px;
+        margin: 4rem auto;
+        padding: 2rem;
+        text-align: center;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .maintenance-icon {
+        font-size: 4rem;
+        color: #b5a79c;
+        margin-bottom: 1rem;
+    }
+
+    .maintenance-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
+    .maintenance-message {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .maintenance-info {
+        font-size: 0.9rem;
+        color: #999;
+    }
+
+    /* Dark mode styles */
+    body.dark-mode .maintenance-container {
+        background: #333;
+    }
+
+    body.dark-mode .maintenance-title {
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .maintenance-message {
+        color: #ccc;
+    }
+
+    body.dark-mode .maintenance-info {
+        color: #999;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="maintenance-container">
+    <div class="maintenance-icon">🛠️</div>
+    <h1 class="maintenance-title">{{ title }}</h1>
+    <p class="maintenance-message">{{ message }}</p>
+    <p class="maintenance-info">We're working to improve our service and will be back online shortly.</p>
+</div>
+{% endblock %} 
