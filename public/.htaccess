@@ -1,0 +1,46 @@
+# Use the front controller as index file
+DirectoryIndex index.php
+
+# Uncomment the following line if you install assets as symlinks or if you 
+# experience problems related to symlinks when compiling LESS/Sass/CoffeeScript
+# Options +FollowSymlinks
+
+# Disabling MultiViews prevents unwanted negotiation
+Options -MultiViews
+
+RewriteEngine On
+
+# Determine the RewriteBase automatically and set it as environment variable
+RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
+RewriteRule ^(.*) - [E=BASE:%1]
+
+# If the requested filename exists, simply serve it
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule .? - [L]
+
+# Otherwise rewrite to index.php
+RewriteRule .? %{ENV:BASE}/index.php [L]
+
+# Set PHP settings for InfinityFree
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 20M
+    php_value post_max_size 20M
+    php_value memory_limit 256M
+    php_value max_execution_time 300
+    php_flag display_errors Off
+    php_flag log_errors On
+</IfModule>
+
+# Disable directory listing
+Options -Indexes
+
+# Block access to sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch ".(git|env|env.local|env.*.local|config|cache|log|vendor)">
+    Order allow,deny
+    Deny from all
+</FilesMatch> 
